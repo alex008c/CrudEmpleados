@@ -1,4 +1,4 @@
-# 📑 Índice de Documentación - CRUD Empleados
+# 📑 Índice de Documentación - CRUD Empleados MVVM
 
 **Guía completa del proyecto organizada por audiencia y propósito.**
 
@@ -19,6 +19,39 @@ Los pasos mínimos para ejecutar el proyecto:
 
 ---
 
+## 📋 Para Evaluación del Proyecto
+
+### [EVIDENCIAS.md](./EVIDENCIAS.md) ⭐ **NUEVO**
+**⏱️ Tiempo: 20 minutos**
+
+Documento completo con evidencias de los 5 criterios de evaluación:
+- Diagramas de arquitectura MVVM
+- Medición visible de concurrencia (Future.wait)
+- Flujo completo de JWT con código
+- Demostración de CRUD con refresco automático
+- Explicación detallada de cada capa
+
+✅ **Perfecto para:** Evaluadores, presentaciones, evidencia del proyecto
+
+---
+
+## 👨‍💻 Para Desarrolladores
+
+### [GUIA_DESARROLLADORES.md](./GUIA_DESARROLLADORES.md) ⭐ **NUEVO**
+**⏱️ Tiempo: 45 minutos**
+
+Guía para programadores con experiencia básica pero nuevos en Flutter/FastAPI/MVVM:
+- Explicación de arquitectura MVVM con ejemplos
+- FastAPI: async/await, Pydantic, SQLAlchemy
+- Flutter: Widgets, Provider, Consumer
+- Concurrencia con Future.wait
+- Autenticación JWT paso a paso
+- Flujo completo de datos en el sistema
+
+✅ **Perfecto para:** Desarrolladores que conocen programación básica y BD pero son nuevos en estas tecnologías
+
+---
+
 ## 📖 Documentación Principal
 
 ### [README.md](../README.md)
@@ -26,7 +59,7 @@ Los pasos mínimos para ejecutar el proyecto:
 
 Visión general completa del proyecto:
 - Características del sistema
-- Arquitectura del proyecto
+- Arquitectura MVVM del proyecto
 - Instalación detallada
 - Configuración de base de datos
 - Uso del sistema

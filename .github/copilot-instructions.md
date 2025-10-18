@@ -2,9 +2,15 @@
 
 ## Project Overview
 
-Flutter + FastAPI employee management system with JWT authentication, async operations, and parallel data loading.
+Flutter + FastAPI employee management system with **MVVM architecture**, JWT authentication, async operations, and parallel data loading with measurable concurrency.
 
 ## Architecture
+
+**MVVM Pattern (Model-View-ViewModel):**
+- **View** (`screens/`) - UI only, no business logic
+- **ViewModel** (`viewmodels/`) - Business logic, state management, coordinates operations
+- **Repository** (`repositories/`) - Data access, HTTP calls, persistence
+- **Model** (`models/`) - Data structures
 
 **Backend (FastAPI):**
 - `backend/main.py` - API endpoints, CORS config
@@ -13,12 +19,108 @@ Flutter + FastAPI employee management system with JWT authentication, async oper
 - `backend/database.py` - DB connection with dependency injection
 
 **Frontend (Flutter):**
-- `frontend/lib/main.dart` - App entry point
+- `frontend/lib/main.dart` - App entry point with MultiProvider setup
 - `frontend/lib/models/empleado.dart` - Data model with JSON serialization
-- `frontend/lib/services/api_service.dart` - HTTP client, token management, Future.wait parallelism
-- `frontend/lib/screens/` - Login, home (list), and form screens
+- `frontend/lib/repositories/` - Data access layer (HTTP + local storage)
+  - `auth_repository.dart` - Authentication, token management
+  - `empleado_repository.dart` - CRUD operations, concurrency measurement
+- `frontend/lib/viewmodels/` - Business logic and state management
+  - `auth_viewmodel.dart` - Auth state, login/logout coordination
+  - `empleado_viewmodel.dart` - Employee CRUD coordination
+- `frontend/lib/screens/` - UI layer (Views)
+  - `login_screen.dart` - Uses AuthViewModel
+  - `home_screen.dart` - Uses EmpleadoViewModel
+  - `empleado_form_screen.dart` - Create/edit form
 
 ## Key Patterns
+
+### MVVM Architecture
+**View (Screens):**
+- Only renders UI and captures user events
+- Uses `Consumer<T>` to listen to ViewModel changes
+- Uses `context.read<T>()` to execute ViewModel methods
+- No business logic, no HTTP calls
+
+```dart
+// View example
+Consumer<EmpleadoViewModel>(
+  builder: (context, viewModel, child) {
+    if (viewModel.isLoading) return CircularProgressIndicator();
+    return ListView.builder(
+      itemCount: viewModel.empleados.length,
+      itemBuilder: (ctx, i) => EmpleadoTile(viewModel.empleados[i]),
+    );
+  },
+)
+```
+
+**ViewModel (Business Logic):**
+- Extends `ChangeNotifier`
+- Manages UI state (`isLoading`, `errorMessage`, data)
+- Coordinates operations between View and Repository
+- Calls `notifyListeners()` to update Views
+- Contains business validations
+
+```dart
+// ViewModel example
+class EmpleadoViewModel extends ChangeNotifier {
+  final EmpleadoRepository _repository;
+  
+  List<Empleado> _empleados = [];
+  bool _isLoading = false;
+  
+  Future<void> cargarEmpleados() async {
+    _isLoading = true;
+    notifyListeners(); // Updates UI
+    
+    try {
+      _empleados = await _repository.getEmpleados();
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+}
+```
+
+**Repository (Data Access):**
+- Handles HTTP requests
+- Manages token persistence (SharedPreferences)
+- Implements caching if needed
+- Contains concurrency logic (Future.wait)
+- Returns `Future<T>` or throws exceptions
+- No UI state management
+
+```dart
+// Repository example
+class EmpleadoRepository {
+  Future<List<Empleado>> getEmpleados() async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/empleados'),
+      headers: {'Authorization': 'Bearer $token'},
+    );
+    return jsonDecode(response.body).map(...).toList();
+  }
+}
+```
+
+**Provider Setup in main.dart:**
+```dart
+MultiProvider(
+  providers: [
+    ChangeNotifierProvider(
+      create: (_) => AuthViewModel(AuthRepository(baseUrl: API_URL)),
+    ),
+    ChangeNotifierProxyProvider<AuthViewModel, EmpleadoViewModel>(
+      create: (_) => EmpleadoViewModel(...),
+      update: (_, authVM, __) => EmpleadoViewModel(
+        EmpleadoRepository(token: authVM.currentToken),
+      ),
+    ),
+  ],
+  child: MyApp(),
+)
+```
 
 ### Authentication Flow
 1. Login → POST /auth/login → JWT token returned
@@ -32,12 +134,45 @@ Flutter + FastAPI employee management system with JWT authentication, async oper
 - **Critical**: Always check `if (!mounted)` before `setState` after async operations
 
 ### Parallel Loading (Future.wait)
-See `api_service.dart` → `cargarDatosYFotosEnParalelo()`:
+**Ubicación**: `lib/repositories/empleado_repository.dart` → `cargarEmpleadosParalelo()`, `cargarEmpleadosSecuencial()`, `compararMetodos()`
+
+**Secuencial (lento)**:
 ```dart
-final futures = ids.map((id) => getEmpleado(id)).toList();
-final results = await Future.wait(futures);
+for (final id in ids) {
+  final empleado = await getEmpleadoById(id); // Espera uno por uno
+  empleados.add(empleado);
+}
+// Tiempo total: n * tiempo_peticion
 ```
-Executes multiple HTTP requests simultaneously instead of sequentially.
+
+**Paralelo con Future.wait (rápido)**:
+```dart
+final futures = ids.map((id) => getEmpleadoById(id)).toList();
+final empleados = await Future.wait(futures); // Todas al mismo tiempo
+// Tiempo total: ~tiempo_peticion
+```
+
+**Medición de tiempos**:
+```dart
+class ConcurrencyResult {
+  final List<Empleado> empleados;
+  final int tiempoMs;           // ← Tiempo medido con Stopwatch
+  final String metodo;
+}
+
+Future<ComparisonResult> compararMetodos(List<int> ids) async {
+  final secuencial = await cargarEmpleadosSecuencial(ids);
+  final paralelo = await cargarEmpleadosParalelo(ids);
+  
+  return ComparisonResult(
+    secuencial: secuencial,
+    paralelo: paralelo,
+    mejoraPorcentaje: ((secuencial.tiempoMs - paralelo.tiempoMs) / secuencial.tiempoMs * 100),
+  );
+}
+```
+
+Ejecuta múltiples peticiones HTTP simultáneamente. Incluye clases `ConcurrencyResult` y `ComparisonResult` para medición visible de tiempos.
 
 ### Auto-refresh Pattern
 After CREATE/UPDATE/DELETE operations, screens automatically refresh:
@@ -125,12 +260,13 @@ All documentation is in the `docs/` folder:
 - `README.md` - Main project overview (root)
 - `docs/INDICE.md` - Documentation index and navigation
 - `docs/DOCUMENTACION.md` - Technical architecture details
-- `docs/GUIA_PRINCIPIANTES.md` - Beginner-friendly explanations
+- `docs/GUIA_DESARROLLADORES.md` - Guide for developers with programming experience but new to Flutter/FastAPI/MVVM
 - `docs/INICIO_RAPIDO.md` - Quick start guide
 - `docs/FEATURES.md` - Implemented features checklist
 - `docs/EJEMPLOS_CODIGO.md` - Commented code examples
 - `docs/ESTRUCTURA.md` - Project structure overview
 - `docs/FAQ.md` - Frequently asked questions
+- `docs/EVIDENCIAS.md` - **Evidence document with MVVM diagrams, concurrency measurements, JWT flow, CRUD demonstration**
 
 ## Dependencies
 
