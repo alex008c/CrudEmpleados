@@ -70,14 +70,19 @@ Visión general completa del proyecto:
 
 ---
 
-## 🎓 Para Aprender
+## 🎓 Para Principiantes
 
-### [GUIA_PRINCIPIANTES.md](./GUIA_PRINCIPIANTES.md)
-**⏱️ Tiempo: 45 minutos**
+### [GUIA_PRINCIPIANTES.md](./GUIA_PRINCIPIANTES.md) ⭐ **ACTUALIZADO**
+**⏱️ Tiempo: 60 minutos**
 
-Explicación didáctica de TODO el proyecto:
-- ¿Qué es cada componente?
-- Analogías y ejemplos simples
+Guía completa desde CERO para personas con conocimientos básicos de programación:
+- Instalación paso a paso de Python y Flutter
+- **SQLite explicado**: NO requiere instalación separada
+- Cómo funciona `create_all()` automáticamente
+- Conceptos clave explicados: API REST, JWT, MVVM, Future.wait
+- Analogías y ejemplos del mundo real
+- Problemas comunes y soluciones
+- Checklist de evaluación completo
 - Explicación de conceptos (JWT, async/await, Future.wait)
 - Diagramas de flujo
 - Conceptos de seguridad

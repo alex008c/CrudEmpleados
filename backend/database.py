@@ -2,14 +2,13 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-# Configuración de la base de datos PostgreSQL
-# Puedes cambiar esto por tu conexión de DBeaver o Supabase
-DATABASE_URL = "postgresql://usuario:password@localhost:5432/empleados_db"
+# Configuración de la base de datos SQLite (para desarrollo)
+DATABASE_URL = "sqlite:///./empleados.db"
 
-# Para desarrollo rápido, puedes usar SQLite:
-# DATABASE_URL = "sqlite:///./empleados.db"
+# Para producción con PostgreSQL:
+# DATABASE_URL = "postgresql://usuario:password@localhost:5432/empleados_db"
 
-engine = create_engine(DATABASE_URL)
+engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()

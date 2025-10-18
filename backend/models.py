@@ -56,6 +56,11 @@ class Empleado(EmpleadoBase):
     class Config:
         from_attributes = True
 
+class UsuarioCreate(BaseModel):
+    username: str
+    password: str
+    email: str
+
 class LoginRequest(BaseModel):
     username: str
     password: str

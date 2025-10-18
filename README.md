@@ -1,78 +1,123 @@
 # 🚀 CRUD Empleados - Flutter + FastAPI
 
-Sistema completo de gestión de empleados con autenticación JWT, operaciones CRUD y carga paralela de datos.
+Sistema completo de gestión de empleados con **arquitectura MVVM**, autenticación JWT, operaciones CRUD y concurrencia medible con Future.wait.
 
-## 📋 Características
+## ⚡ Inicio Rápido
 
-✅ **Backend FastAPI (Python)**
-- Autenticación con JWT
-- API REST completa (CRUD)
-- PostgreSQL / SQLite
-- Endpoints async/await
-- CORS configurado
+### 🎯 Opción 1: Script Automático (TODO EN UNO)
+```powershell
+.\start_all.ps1
+```
+Este script inicia backend y frontend automáticamente en terminales separadas.
 
-✅ **Frontend Flutter (Dart)**
-- Login con validación asíncrona
-- Carga paralela con Future.wait
-- Actualización automática de listas
-- UI Material Design
-- Gestión de tokens
+### 🔧 Opción 2: Scripts Individuales (2 TERMINALES)
 
-## 🏗️ Arquitectura del Proyecto
+**Terminal 1 - Backend:**
+```powershell
+.\start_backend.ps1
+```
+
+**Terminal 2 - Frontend:**
+```powershell
+.\start_frontend.ps1
+```
+
+### 💻 Opción 3: Comandos Manuales
+
+**Terminal 1 - Backend:**
+```powershell
+cd backend
+python -m uvicorn main:app --reload
+```
+
+**Terminal 2 - Frontend:**
+```powershell
+cd frontend
+flutter run -d windows  # O: flutter run -d chrome
+```
+
+---
+
+## 📋 Características Principales
+
+### ✅ **Backend FastAPI (Python)**
+- ✨ Autenticación con JWT (30 min expiration)
+- 🔄 API REST completa (CRUD)
+- 💾 SQLite (desarrollo) / PostgreSQL (producción)
+- ⚡ Endpoints async/await
+- 🌐 CORS configurado
+- 📚 Documentación automática (Swagger)
+
+### ✅ **Frontend Flutter (Dart)**
+- 🏛️ **Arquitectura MVVM** (Model-View-ViewModel)
+- 🔐 Login con validación y persistencia de tokens
+- 🏃‍♂️ **Concurrencia medible** (Future.wait vs secuencial)
+- 🔄 Actualización automática con Provider
+- 🎨 UI Material Design 3
+- 💾 Gestión de estado con ChangeNotifier
+
+### 🎯 **Criterios de Evaluación (10 puntos)**
+- ✅ **Arquitectura MVVM** - Separación View/ViewModel/Repository (2 pts)
+- ✅ **Concurrencia medible** - Demo con tiempos visibles (2 pts)
+- ✅ **Login con Backend** - JWT + persistencia (2 pts)
+- ✅ **CRUD funcional** - CREATE, READ, UPDATE, DELETE (2 pts)
+- ✅ **Documentación completa** - Evidencias y guías (2 pts)
+
+## 🏗️ Arquitectura MVVM
 
 ```
 CrudEmpleados/
 ├── backend/                    # API FastAPI (Python)
-│   ├── main.py                # Punto de entrada, endpoints
-│   ├── models.py              # Modelos SQLAlchemy y Pydantic
-│   ├── auth.py                # Autenticación JWT
-│   ├── database.py            # Configuración de BD
+│   ├── main.py                # Endpoints REST
+│   ├── models.py              # Modelos SQLAlchemy + Pydantic
+│   ├── auth.py                # JWT generation/validation
+│   ├── database.py            # DB config (SQLite/PostgreSQL)
 │   └── requirements.txt       # Dependencias Python
 │
 ├── frontend/                  # Aplicación Flutter (Dart)
 │   ├── lib/
-│   │   ├── main.dart         # Punto de entrada
+│   │   ├── main.dart         # MultiProvider setup
 │   │   ├── models/
-│   │   │   └── empleado.dart # Modelo de datos
-│   │   ├── services/
-│   │   │   └── api_service.dart  # Cliente HTTP, Future.wait
-│   │   └── screens/
-│   │       ├── login_screen.dart      # Login async/await
-│   │       ├── home_screen.dart       # Lista de empleados
-│   │       └── empleado_form_screen.dart  # Formulario CRUD
-│   └── pubspec.yaml          # Dependencias Flutter
+│   │   │   └── empleado.dart # Data model
+│   │   ├── repositories/     # 📁 DATA LAYER
+│   │   │   ├── auth_repository.dart      # Login, tokens
+│   │   │   └── empleado_repository.dart  # CRUD + concurrencia
+│   │   ├── viewmodels/       # 📁 BUSINESS LOGIC
+│   │   │   ├── auth_viewmodel.dart       # Auth state
+│   │   │   └── empleado_viewmodel.dart   # CRUD coordination
+│   │   └── screens/          # 📁 UI LAYER (VIEWS)
+│   │       ├── login_screen.dart         # Consumer<AuthViewModel>
+│   │       ├── home_screen.dart          # Consumer<EmpleadoViewModel>
+│   │       └── empleado_form_screen.dart # Create/Edit form
+│   └── pubspec.yaml          # Dependencias
 │
-└── docs/                      # 📚 Documentación completa
-    ├── INDICE.md             # Índice de toda la documentación
-    ├── INICIO_RAPIDO.md      # Setup rápido
-    ├── GUIA_PRINCIPIANTES.md # Explicación didáctica
-    ├── DOCUMENTACION.md      # Documentación técnica
-    ├── EJEMPLOS_CODIGO.md    # Código comentado
-    ├── ESTRUCTURA.md         # Vista general
-    ├── FEATURES.md           # Características
-    └── FAQ.md                # Preguntas frecuentes
+├── docs/                      # 📚 Documentación
+│   ├── INDICE.md             # Índice completo
+│   ├── EVIDENCIAS.md         # ⭐ EVIDENCIAS DE EVALUACIÓN
+│   ├── GUIA_DESARROLLADORES.md  # Guía técnica
+│   ├── DOCUMENTACION.md      # Arquitectura detallada
+│   └── ...más docs
+│
+└── Scripts de inicio          # 🚀 Automatización
+    ├── start_all.ps1         # Inicia todo automáticamente
+    ├── start_backend.ps1     # Solo backend
+    └── start_frontend.ps1    # Solo frontend
 ```
 
-## 🔧 Instalación y Configuración
+---
 
-### **Backend (FastAPI)**
+## 🔧 Instalación (Solo primera vez)
 
-#### 1. Instalar dependencias de Python
+### **Requisitos:**
+- Python 3.11+
+- Flutter 3.0+
+- VS Code (recomendado)
 
+### **Instalación automática:**
+Ejecuta cualquier script de inicio y las dependencias se instalarán automáticamente:
 ```powershell
-cd backend
-pip install -r requirements.txt
+.\start_all.ps1
 ```
-
-#### 2. Configurar base de datos
-
-**Opción A: PostgreSQL (Recomendado para producción)**
-
-1. Instala PostgreSQL o usa Supabase
-2. Crea una base de datos: `empleados_db`
-3. Edita `database.py` línea 6:
-
-```python
 DATABASE_URL = "postgresql://usuario:password@localhost:5432/empleados_db"
 ```
 
