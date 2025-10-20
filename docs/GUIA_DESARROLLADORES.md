@@ -803,3 +803,234 @@ flutter run
 **¿Future.wait mejora siempre?**
 - **Sí** cuando las operaciones son independientes (cargar varios empleados)
 - **No** cuando una depende de otra (login → luego cargar datos)
+
+---
+
+## 🚀 Concurrencia Detallada: Future.wait
+
+### Código Completo de Concurrencia
+
+**Ubicación:** `frontend/lib/repositories/empleado_repository.dart`
+
+#### Método Secuencial (Lento)
+
+```dart
+Future<ConcurrencyResult> cargarEmpleadosSecuencial(List<int> ids) async {
+  final stopwatch = Stopwatch()..start();
+  final empleados = <Empleado>[];
+
+  for (final id in ids) {
+    try {
+      final empleado = await getEmpleadoById(id);
+      empleados.add(empleado);
+    } catch (e) {
+      print('Error cargando empleado $id: $e');
+    }
+  }
+
+  stopwatch.stop();
+  return ConcurrencyResult(
+    empleados: empleados,
+    tiempoMs: stopwatch.elapsedMilliseconds,
+    metodo: 'Secuencial',
+  );
+}
+```
+
+#### Método Paralelo (Rápido)
+
+```dart
+Future<ConcurrencyResult> cargarEmpleadosParalelo(List<int> ids) async {
+  final stopwatch = Stopwatch()..start();
+
+  final futures = ids.map((id) async {
+    try {
+      return await getEmpleadoById(id);
+    } catch (e) {
+      print('Error cargando empleado $id: $e');
+      return null;
+    }
+  }).toList();
+
+  final results = await Future.wait(futures);
+  final empleados = results.whereType<Empleado>().toList();
+
+  stopwatch.stop();
+  return ConcurrencyResult(
+    empleados: empleados,
+    tiempoMs: stopwatch.elapsedMilliseconds,
+    metodo: 'Paralelo (Future.wait)',
+  );
+}
+```
+
+### Resultados Medidos
+
+| Método | Tiempo | Mejora |
+|--------|--------|--------|
+| Secuencial | 45 ms | - |
+| Paralelo | 9 ms | **80%** |
+
+---
+
+## 📸 Subida de Imágenes
+
+### Backend: Endpoint de Upload
+
+```python
+@app.post("/upload-image")
+async def upload_image(
+    file: UploadFile = File(...),
+    current_user: str = Depends(auth.verify_token)
+):
+    # Validar tipo
+    allowed_types = ["image/jpeg", "image/jpg", "image/png", "image/gif"]
+    if file.content_type not in allowed_types:
+        raise HTTPException(400, "Tipo no permitido")
+    
+    # Validar tamaño (5MB)
+    contents = await file.read()
+    if len(contents) > 5 * 1024 * 1024:
+        raise HTTPException(400, "Archivo muy grande")
+    
+    # Generar nombre único
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    unique_filename = f"{timestamp}_{uuid.uuid4().hex[:8]}.{file_extension}"
+    
+    # Guardar
+    file_path = UPLOAD_DIR / unique_filename
+    with open(file_path, "wb") as buffer:
+        buffer.write(contents)
+    
+    return {"url": f"http://127.0.0.1:8000/uploads/{unique_filename}"}
+```
+
+### Frontend: image_picker
+
+```dart
+Future<void> _seleccionarImagen() async {
+  // 1. Seleccionar fuente
+  final source = await showDialog<ImageSource>(...);
+  
+  // 2. Elegir imagen
+  final XFile? image = await _picker.pickImage(
+    source: source,
+    maxWidth: 800,
+    maxHeight: 800,
+    imageQuality: 85,
+  );
+  
+  // 3. Subir al servidor
+  final imageUrl = await viewModel.uploadImage(File(image.path));
+  
+  // 4. Actualizar URL
+  setState(() {
+    _fotoUrlController.text = imageUrl;
+  });
+}
+```
+
+---
+
+## ❓ FAQ - Preguntas Frecuentes
+
+### Instalación
+
+**P: ¿Qué necesito instalar?**
+- Backend: Python 3.8+ 
+- Frontend: Flutter SDK
+- Base de datos: SQLite (incluido) o PostgreSQL (opcional)
+
+**P: ¿Cómo instalo dependencias?**
+```bash
+# Backend
+cd backend
+pip install -r requirements.txt
+
+# Frontend
+cd frontend
+flutter pub get
+```
+
+### Ejecución
+
+**P: ¿Cómo ejecuto el proyecto?**
+```bash
+# Terminal 1
+cd backend
+uvicorn main:app --reload
+
+# Terminal 2
+cd frontend
+flutter run
+```
+
+### Errores Comunes
+
+**P: "Connection refused" en Flutter**
+- Emulador Android: Usa `http://10.0.2.2:8000`
+- iOS: Usa `http://localhost:8000`
+- Físico: Usa `http://TU_IP:8000`
+
+**P: "401 Unauthorized"**
+- Token expiró (30 min)
+- Haz logout y login nuevamente
+
+**P: "Module not found" en Python**
+```bash
+pip install -r requirements.txt
+```
+
+**P: Backend no recarga automáticamente**
+- Verifica que tengas `--reload` en uvicorn
+- O reinicia manualmente
+
+### Desarrollo
+
+**P: ¿Cómo agrego un nuevo campo a Empleado?**
+1. Backend: Agregar columna en `EmpleadoDB` (models.py)
+2. Backend: Agregar en schema `EmpleadoCreate`
+3. Frontend: Agregar en clase `Empleado` (models/empleado.dart)
+4. Frontend: Agregar campo en formulario
+
+**P: ¿Cómo cambio la base de datos?**
+Edita `backend/database.py`:
+```python
+# SQLite
+DATABASE_URL = "sqlite:///./empleados.db"
+
+# PostgreSQL
+DATABASE_URL = "postgresql://user:pass@host:5432/db"
+```
+
+**P: ¿Cómo cambio el tiempo de expiración del token?**
+Edita `backend/auth.py`:
+```python
+ACCESS_TOKEN_EXPIRE_MINUTES = 30  # Cambia a lo que quieras
+```
+
+---
+
+## 📚 Recursos Adicionales
+
+### Documentación Oficial
+- [Flutter](https://flutter.dev/docs) - Framework de UI
+- [FastAPI](https://fastapi.tiangolo.com) - Framework backend
+- [Provider](https://pub.dev/packages/provider) - State management
+- [SQLAlchemy](https://docs.sqlalchemy.org) - ORM Python
+- [JWT.io](https://jwt.io) - Decodificar tokens
+
+### Tutoriales Recomendados
+- Flutter Basics: https://flutter.dev/docs/get-started/codelab
+- FastAPI Tutorial: https://fastapi.tiangolo.com/tutorial/
+- Provider Pattern: https://flutter.dev/docs/development/data-and-backend/state-mgmt/simple
+
+### Comunidad
+- Flutter Discord: https://discord.gg/flutter
+- r/FlutterDev: https://reddit.com/r/FlutterDev
+- Stack Overflow: Tag `flutter` y `fastapi`
+
+---
+
+**Última actualización:** 2024  
+**Versión del proyecto:** 1.1.0
