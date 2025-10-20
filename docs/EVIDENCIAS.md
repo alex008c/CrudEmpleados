@@ -8,18 +8,18 @@
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│                      FLUTTER APP                         │
+│                      FLUTTER APP                        │
 ├─────────────────────────────────────────────────────────┤
-│                                                          │
-│  ┌──────────────┐     ┌──────────────┐                 │
-│  │   VIEW       │     │   VIEW       │                 │
-│  │  LoginScreen │     │  HomeScreen  │                 │
-│  │  (UI only)   │     │  (UI only)   │                 │
-│  └──────┬───────┘     └──────┬───────┘                 │
-│         │                     │                          │
+│                                                         │
+│  ┌──────────────┐     ┌──────────────┐                  │
+│  │   VIEW       │     │   VIEW       │                  │
+│  │  LoginScreen │     │  HomeScreen  │                  │
+│  │  (UI only)   │     │  (UI only)   │                  │
+│  └──────┬───────┘     └──────┬───────┘                  │
+│         │                     │                         │
 │         │   Consumer<T>       │   Consumer<T>           │
 │         │   context.read<T>() │   context.watch<T>()    │
-│         ▼                     ▼                          │
+│         ▼                     ▼                         │
 │  ┌────────────────────────────────────┐                 │
 │  │         VIEWMODEL LAYER            │                 │
 │  ├────────────────┬───────────────────┤                 │
@@ -28,9 +28,9 @@
 │  │ - Validación   │ - Lógica CRUD     │                 │
 │  │ - Login/Logout │ - Filtros         │                 │
 │  └────────┬───────┴────────┬──────────┘                 │
-│           │                 │                            │
-│           │ notifyListeners()                            │
-│           ▼                 ▼                            │
+│           │                 │                           │
+│           │ notifyListeners()                           │
+│           ▼                 ▼                           │
 │  ┌────────────────────────────────────┐                 │
 │  │        REPOSITORY LAYER            │                 │
 │  ├────────────────┬───────────────────┤                 │
@@ -39,10 +39,10 @@
 │  │ - Token mgmt   │ - CRUD ops        │                 │
 │  │ - Persistence  │ - Concurrency     │                 │
 │  └────────┬───────┴────────┬──────────┘                 │
-│           │                 │                            │
-└───────────┼─────────────────┼────────────────────────────┘
-            │                 │
-            ▼                 ▼
+│           │                │                            │
+└───────────┼────────────────┼────────────────────────────┘
+            │                │
+            ▼                ▼
    ┌────────────────────────────────┐
    │      BACKEND (FastAPI)         │
    ├────────────────────────────────┤
@@ -75,8 +75,8 @@ Consumer<AuthViewModel>(
   builder: (context, authViewModel, child) {
     return ElevatedButton(
       onPressed: authViewModel.isLoading ? null : _handleLogin,
-      child: authViewModel.isLoading 
-        ? CircularProgressIndicator() 
+      child: authViewModel.isLoading
+        ? CircularProgressIndicator()
         : Text('Login'),
     );
   },
@@ -85,7 +85,7 @@ Consumer<AuthViewModel>(
 
 **2. VIEWMODEL (Business Logic)**
 - **Archivos**: `lib/viewmodels/auth_viewmodel.dart`, `lib/viewmodels/empleado_viewmodel.dart`
-- **Responsabilidad**: 
+- **Responsabilidad**:
   - Manejar estado de la UI (`isLoading`, `errorMessage`)
   - Coordinar operaciones entre View y Repository
   - Validaciones de negocio
@@ -96,11 +96,11 @@ Consumer<AuthViewModel>(
 class AuthViewModel extends ChangeNotifier {
   bool _isLoading = false;
   String? _errorMessage;
-  
+
   Future<bool> login(String username, String password) async {
     _isLoading = true;
     notifyListeners(); // Actualiza la UI
-    
+
     try {
       final token = await _repository.login(username, password);
       _isAuthenticated = true;
