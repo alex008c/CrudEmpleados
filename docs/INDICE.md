@@ -50,6 +50,20 @@ Guía para programadores con experiencia básica pero nuevos en Flutter/FastAPI/
 
 ✅ **Perfecto para:** Desarrolladores que conocen programación básica y BD pero son nuevos en estas tecnologías
 
+### [SUBIDA_ARCHIVOS.md](./SUBIDA_ARCHIVOS.md) ⭐ **NUEVO**
+**⏱️ Tiempo: 30 minutos**
+
+Guía completa de la funcionalidad de subida de imágenes:
+- Arquitectura de file upload (Backend + Frontend)
+- Endpoint `/upload-image` con validaciones
+- Servicio de archivos estáticos con StaticFiles
+- image_picker en Flutter (galería/cámara)
+- Flujo completo de subida con diagramas
+- Configuración de producción y seguridad
+- Troubleshooting común
+
+✅ **Perfecto para:** Entender cómo funciona la subida de archivos reales
+
 ---
 
 ## 📖 Documentación Principal

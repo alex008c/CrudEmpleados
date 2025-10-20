@@ -1,21 +1,32 @@
-from fastapi import FastAPI, Depends, HTTPException, status
+from fastapi import FastAPI, Depends, HTTPException, status, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import Session
 from typing import List
 from datetime import timedelta
+import os
+import shutil
+from pathlib import Path
 
 import models
 import auth
 from database import engine, get_db
 from models import (
-    EmpleadoDB, UsuarioDB, Empleado, EmpleadoCreate, 
+    EmpleadoDB, UsuarioDB, Empleado, EmpleadoCreate,
     EmpleadoUpdate, LoginRequest, Token, UsuarioCreate
 )
 
 # Crear las tablas en la base de datos
 models.Base.metadata.create_all(bind=engine)
 
+# Crear directorio para archivos subidos
+UPLOAD_DIR = Path("uploads")
+UPLOAD_DIR.mkdir(exist_ok=True)
+
 app = FastAPI(title="API CRUD Empleados", version="1.0.0")
+
+# Montar directorio estático para servir archivos subidos
+app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 # Configurar CORS para permitir peticiones desde Flutter
 app.add_middleware(
@@ -169,6 +180,68 @@ async def delete_empleado(
     db.delete(db_empleado)
     db.commit()
     return {"message": "Empleado eliminado exitosamente"}
+
+# ==================== ENDPOINT DE SUBIDA DE IMÁGENES ====================
+
+@app.post("/upload-image")
+async def upload_image(
+    file: UploadFile = File(...),
+    current_user: str = Depends(auth.verify_token)
+):
+    """
+    Sube una imagen de empleado y devuelve la URL para acceder a ella.
+    Acepta: jpg, jpeg, png, gif
+    Tamaño máximo: 5MB
+    """
+    # Log para debugging
+    print(f"📸 Recibiendo archivo: {file.filename}")
+    print(f"   Content-Type: {file.content_type}")
+    
+    # Validar tipo de archivo (más permisivo)
+    allowed_types = ["image/jpeg", "image/jpg", "image/png", "image/gif"]
+    allowed_extensions = [".jpg", ".jpeg", ".png", ".gif"]
+    
+    file_extension = file.filename.split(".")[-1].lower() if file.filename else ""
+    
+    # Validar por content-type O por extensión
+    if file.content_type not in allowed_types and f".{file_extension}" not in allowed_extensions:
+        print(f"❌ Tipo rechazado: {file.content_type}, extensión: {file_extension}")
+        raise HTTPException(
+            status_code=400,
+            detail=f"Tipo de archivo no permitido. Content-Type: {file.content_type}. Use: jpg, jpeg, png, gif"
+        )
+    
+    # Validar tamaño (5MB máximo)
+    contents = await file.read()
+    file_size = len(contents)
+    print(f"   Tamaño: {file_size / 1024:.2f} KB")
+    
+    if file_size > 5 * 1024 * 1024:  # 5MB en bytes
+        raise HTTPException(
+            status_code=400,
+            detail="El archivo es muy grande. Tamaño máximo: 5MB"
+        )
+    
+    # Generar nombre único con timestamp y extensión original
+    import uuid
+    from datetime import datetime
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    unique_filename = f"{timestamp}_{uuid.uuid4().hex[:8]}.{file_extension}"
+    
+    # Guardar archivo
+    file_path = UPLOAD_DIR / unique_filename
+    with open(file_path, "wb") as buffer:
+        buffer.write(contents)
+    
+    print(f"✅ Archivo guardado: {unique_filename}")
+    
+    # Devolver URL completa
+    file_url = f"http://127.0.0.1:8000/uploads/{unique_filename}"
+    return {
+        "url": file_url,
+        "filename": unique_filename,
+        "size": file_size
+    }
 
 # ==================== ENDPOINT DE PRUEBA ====================
 

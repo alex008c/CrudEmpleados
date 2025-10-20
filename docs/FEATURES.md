@@ -23,6 +23,14 @@
 - [x] Schemas Pydantic para validación
 - [x] Migración automática de tablas
 
+### Archivos y Medios
+- [x] Endpoint /upload-image para subida de archivos
+- [x] Validación de tipos de archivo (jpg, jpeg, png, gif)
+- [x] Validación de tamaño máximo (5MB)
+- [x] Generación de nombres únicos (timestamp + UUID)
+- [x] Servicio de archivos estáticos con StaticFiles
+- [x] Directorio uploads/ con creación automática
+
 ### Configuración
 - [x] CORS configurado para Flutter
 - [x] Documentación interactiva (Swagger UI)
@@ -54,6 +62,19 @@
 - [x] Pull to refresh
 - [x] Loading indicators
 - [x] Navegación fluida
+- [x] Vista previa de imágenes con carga asíncrona
+- [x] Manejo de errores de carga de imágenes
+- [x] CircleAvatar con fotos en lista de empleados
+
+### Imágenes de Empleados
+- [x] Selección de imágenes desde galería
+- [x] Captura de fotos con cámara
+- [x] Subida de archivos con multipart/form-data
+- [x] Indicador de progreso durante subida
+- [x] Opción manual de URL (fallback)
+- [x] Vista previa de imagen seleccionada
+- [x] Redimensionamiento automático (800x800)
+- [x] Compresión de imagen (quality: 85)
 
 ### Concurrencia
 - [x] Login no bloqueante (async/await)
@@ -70,7 +91,13 @@
 - [x] README.md completo con instalación
 - [x] DOCUMENTACION.md técnica detallada
 - [x] GUIA_PRINCIPIANTES.md explicativa
+- [x] GUIA_DESARROLLADORES.md para programadores
 - [x] INICIO_RAPIDO.md para setup rápido
+- [x] EVIDENCIAS.md con diagramas y mediciones
+- [x] CODIGO_CONCURRENCIA.md con ejemplos de Future.wait
+- [x] IMAGENES_EMPLEADOS.md con guía de URLs
+- [x] SUBIDA_ARCHIVOS.md con arquitectura de file upload
+- [x] INDICE.md para navegación
 - [x] Scripts de inicio (PowerShell)
 - [x] Comentarios en código
 - [x] Ejemplos de uso
@@ -92,7 +119,7 @@
 - [ ] Paginación avanzada
 - [ ] Filtros y búsqueda
 - [ ] Ordenamiento
-- [ ] Upload de imágenes (S3, Cloudinary)
+- [ ] Upload de imágenes a S3/Cloudinary (nube)
 - [ ] Rate limiting
 - [ ] Logging estructurado
 - [ ] Health check endpoint
@@ -102,7 +129,7 @@
 - [ ] Tests con flutter_test
 - [ ] Tests de integración
 - [ ] Manejo offline (cache)
-- [ ] Upload de fotos desde galería
+- ~~[ ] Upload de fotos desde galería~~ ✅ **COMPLETADO**
 - [ ] Modo oscuro
 - [ ] Internacionalización (i18n)
 - [ ] Animaciones avanzadas

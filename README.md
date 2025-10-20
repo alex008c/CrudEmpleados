@@ -47,6 +47,8 @@ flutter run -d windows  # O: flutter run -d chrome
 - ⚡ Endpoints async/await
 - 🌐 CORS configurado
 - 📚 Documentación automática (Swagger)
+- 📸 **Upload de imágenes** con validación (5MB máx)
+- 📁 Servicio de archivos estáticos
 
 ### ✅ **Frontend Flutter (Dart)**
 - 🏛️ **Arquitectura MVVM** (Model-View-ViewModel)
@@ -55,6 +57,8 @@ flutter run -d windows  # O: flutter run -d chrome
 - 🔄 Actualización automática con Provider
 - 🎨 UI Material Design 3
 - 💾 Gestión de estado con ChangeNotifier
+- 📷 **Selección de imágenes** (galería/cámara)
+- 🖼️ Vista previa y subida de fotos
 
 ### 🎯 **Criterios de Evaluación (10 puntos)**
 - ✅ **Arquitectura MVVM** - Separación View/ViewModel/Repository (2 pts)
