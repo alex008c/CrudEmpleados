@@ -14,12 +14,21 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = '';
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<EmpleadoViewModel>().cargarEmpleados();
     });
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
 
   Future<void> _handleLogout() async {
@@ -382,74 +391,151 @@ class _HomeScreenState extends State<HomeScreen> {
             );
           }
 
-          return RefreshIndicator(
-            onRefresh: () => viewModel.cargarEmpleados(),
-            child: ListView.builder(
-              padding: const EdgeInsets.all(8),
-              itemCount: viewModel.empleados.length,
-              itemBuilder: (context, index) {
-                final empleado = viewModel.empleados[index];
-                return Card(
-                  elevation: 2,
-                  margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-                  child: ListTile(
-                    leading: empleado.fotoUrl != null && empleado.fotoUrl!.isNotEmpty
-                        ? CircleAvatar(
-                            radius: 25,
-                            backgroundImage: NetworkImage(empleado.fotoUrl!),
-                            onBackgroundImageError: (exception, stackTrace) {
-                              // Si falla la carga, no hacer nada (mostrará el placeholder)
+          // Filtrar empleados según búsqueda
+          final empleadosFiltrados = _searchQuery.isEmpty
+              ? viewModel.empleados
+              : viewModel.buscarEmpleados(_searchQuery);
+
+          return Column(
+            children: [
+              // Campo de búsqueda
+              Container(
+                padding: const EdgeInsets.all(16),
+                color: Colors.blue.shade50,
+                child: TextField(
+                  controller: _searchController,
+                  decoration: InputDecoration(
+                    hintText: 'Buscar empleado por nombre o apellido...',
+                    prefixIcon: const Icon(Icons.search, color: Colors.blue),
+                    suffixIcon: _searchQuery.isNotEmpty
+                        ? IconButton(
+                            icon: const Icon(Icons.clear),
+                            onPressed: () {
+                              setState(() {
+                                _searchController.clear();
+                                _searchQuery = '';
+                              });
                             },
-                            child: null, // La imagen se muestra como fondo
                           )
-                        : CircleAvatar(
-                            backgroundColor: Colors.blue.shade700,
-                            radius: 25,
-                            child: Text(
-                              empleado.nombre[0].toUpperCase(),
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 18,
-                              ),
-                            ),
-                          ),
-                    title: Text(
-                      '${empleado.nombre} ${empleado.apellido}',
-                      style: const TextStyle(fontWeight: FontWeight.bold),
+                        : null,
+                    filled: true,
+                    fillColor: Colors.white,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide.none,
                     ),
-                    subtitle: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(empleado.puesto),
-                        Text(
-                          '\$${empleado.salario.toStringAsFixed(2)}',
-                          style: TextStyle(
-                            color: Colors.green.shade700,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
                     ),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.edit, color: Colors.blue),
-                          onPressed: () => _handleEdit(empleado),
-                          tooltip: 'Editar',
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.delete, color: Colors.red),
-                          onPressed: () => _handleDelete(empleado),
-                          tooltip: 'Eliminar',
-                        ),
-                      ],
-                    ),
-                    isThreeLine: true,
                   ),
-                );
-              },
-            ),
+                  onChanged: (value) {
+                    setState(() {
+                      _searchQuery = value;
+                    });
+                  },
+                ),
+              ),
+              // Resultados de búsqueda
+              if (empleadosFiltrados.isEmpty && _searchQuery.isNotEmpty)
+                Expanded(
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.search_off, size: 64, color: Colors.grey.shade400),
+                        const SizedBox(height: 16),
+                        Text(
+                          'No se encontraron resultados',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.grey.shade600,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Intenta con otro término de búsqueda',
+                          style: TextStyle(color: Colors.grey.shade500),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+              else
+                // Lista de empleados
+                Expanded(
+                  child: RefreshIndicator(
+                    onRefresh: () => viewModel.cargarEmpleados(),
+                    child: ListView.builder(
+                      padding: const EdgeInsets.all(8),
+                      itemCount: empleadosFiltrados.length,
+                      itemBuilder: (context, index) {
+                        final empleado = empleadosFiltrados[index];
+                        return Card(
+                          elevation: 2,
+                          margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+                          child: ListTile(
+                            leading: empleado.fotoUrl != null && empleado.fotoUrl!.isNotEmpty
+                                ? CircleAvatar(
+                                    radius: 25,
+                                    backgroundImage: NetworkImage(empleado.fotoUrl!),
+                                    onBackgroundImageError: (exception, stackTrace) {
+                                      // Si falla la carga, no hacer nada (mostrará el placeholder)
+                                    },
+                                    child: null, // La imagen se muestra como fondo
+                                  )
+                                : CircleAvatar(
+                                    backgroundColor: Colors.blue.shade700,
+                                    radius: 25,
+                                    child: Text(
+                                      empleado.nombre[0].toUpperCase(),
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 18,
+                                      ),
+                                    ),
+                                  ),
+                            title: Text(
+                              '${empleado.nombre} ${empleado.apellido}',
+                              style: const TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(empleado.puesto),
+                                Text(
+                                  '\$${empleado.salario.toStringAsFixed(2)}',
+                                  style: TextStyle(
+                                    color: Colors.green.shade700,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                IconButton(
+                                  icon: const Icon(Icons.edit, color: Colors.blue),
+                                  onPressed: () => _handleEdit(empleado),
+                                  tooltip: 'Editar',
+                                ),
+                                IconButton(
+                                  icon: const Icon(Icons.delete, color: Colors.red),
+                                  onPressed: () => _handleDelete(empleado),
+                                  tooltip: 'Eliminar',
+                                ),
+                              ],
+                            ),
+                            isThreeLine: true,
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+            ],
           );
         },
       ),
