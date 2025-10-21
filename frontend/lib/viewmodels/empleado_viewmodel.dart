@@ -214,12 +214,12 @@ class EmpleadoViewModel extends ChangeNotifier {
     // Tomar máximo 10 empleados para no hacer la demo muy larga
     final idsDemo = ids.take(10).toList();
 
-    print('⚡ Ejecutando demo de concurrencia con ${idsDemo.length} empleados...');
+    print('Ejecutando demo de concurrencia con ${idsDemo.length} empleados...');
     
     // Ejecutar comparación
     final resultado = await _repository.compararMetodos(idsDemo);
     
-    print('✅ Demo completada: ${resultado.mejoraPorcentaje}% de mejora');
+    print('Demo completada: ${resultado.mejoraPorcentaje}% de mejora');
     
     return resultado;
   }

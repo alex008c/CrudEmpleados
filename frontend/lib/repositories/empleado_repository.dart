@@ -207,7 +207,7 @@ class EmpleadoRepository {
 
   /// Comparar ambos métodos y retornar estadísticas
   Future<ComparisonResult> compararMetodos(List<int> ids) async {
-    print('🔄 Iniciando comparación de concurrencia...');
+    print('Iniciando comparación de concurrencia...');
     print('   IDs a cargar: $ids');
 
     if (ids.isEmpty) {
@@ -279,7 +279,7 @@ class ComparisonResult {
   @override
   String toString() {
     return '''
-📊 Comparación de Concurrencia:
+  Comparación de Concurrencia:
    Secuencial: ${secuencial.tiempoMs} ms (${secuencial.empleados.length} empleados)
    Paralelo:   ${paralelo.tiempoMs} ms (${paralelo.empleados.length} empleados)
    Mejora:     $mejoraPorcentaje%

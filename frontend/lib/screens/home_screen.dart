@@ -114,7 +114,7 @@ class _HomeScreenState extends State<HomeScreen> {
     if (viewModel.empleados.length < 2) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Se necesitan al menos 2 empleados para la demo de concurrencia'),
+          content: Text('Se necesitan al menos 2 empleados para la demo'),
           backgroundColor: Colors.orange,
           duration: Duration(seconds: 3),
         ),
@@ -125,24 +125,14 @@ class _HomeScreenState extends State<HomeScreen> {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (ctx) => const Center(
-        child: Card(
-          child: Padding(
-            padding: EdgeInsets.all(24.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                CircularProgressIndicator(),
-                SizedBox(height: 16),
-                Text('Comparando métodos de carga...'),
-                SizedBox(height: 8),
-                Text(
-                  'Secuencial vs Paralelo (Future.wait)',
-                  style: TextStyle(fontSize: 12, color: Colors.grey),
-                ),
-              ],
-            ),
-          ),
+      builder: (ctx) => const AlertDialog(
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            CircularProgressIndicator(),
+            SizedBox(height: 16),
+            Text('Ejecutando comparación...'),
+          ],
         ),
       ),
     );
@@ -157,127 +147,24 @@ class _HomeScreenState extends State<HomeScreen> {
       showDialog(
         context: context,
         builder: (ctx) => AlertDialog(
-          title: const Row(
+          title: const Text('Comparación de Velocidad'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Icon(Icons.speed, color: Colors.blue),
-              SizedBox(width: 8),
-              Text('Resultados de Concurrencia'),
+              Text('Secuencial: ${resultado.secuencial.tiempoMs} ms'),
+              Text('Paralelo: ${resultado.paralelo.tiempoMs} ms'),
+              const SizedBox(height: 8),
+              Text(
+                '${resultado.mejoraPorcentaje.toStringAsFixed(1)}% más rápido',
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
             ],
-          ),
-          content: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  '📊 Comparación de métodos:',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: Colors.red.shade50,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Icon(Icons.slow_motion_video, color: Colors.red.shade700),
-                          const SizedBox(width: 8),
-                          Text(
-                            'Secuencial (lento)',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.red.shade700,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      Text('Empleados: ${resultado.secuencial.empleados.length}'),
-                      Text(
-                        'Tiempo: ${resultado.secuencial.tiempoMs} ms',
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: Colors.green.shade50,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Icon(Icons.fast_forward, color: Colors.green.shade700),
-                          const SizedBox(width: 8),
-                          Text(
-                            'Paralelo con Future.wait',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.green.shade700,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      Text('Empleados: ${resultado.paralelo.empleados.length}'),
-                      Text(
-                        'Tiempo: ${resultado.paralelo.tiempoMs} ms',
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: Colors.blue.shade50,
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.blue.shade200, width: 2),
-                  ),
-                  child: Row(
-                    children: [
-                      const Icon(Icons.trending_up, color: Colors.blue),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          'Mejora: ${resultado.mejoraPorcentaje.toStringAsFixed(1)}% más rápido ✅',
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.blue,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx),
-              child: const Text('Cerrar'),
+              child: const Text('OK'),
             ),
           ],
         ),
@@ -288,7 +175,7 @@ class _HomeScreenState extends State<HomeScreen> {
       
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Error en demo: $e'),
+          content: Text('Error: $e'),
           backgroundColor: Colors.red,
         ),
       );
@@ -542,12 +429,12 @@ class _HomeScreenState extends State<HomeScreen> {
       floatingActionButton: Column(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          FloatingActionButton.extended(
+          FloatingActionButton(
             onPressed: _demostrarConcurrencia,
             backgroundColor: Colors.orange,
             heroTag: 'concurrency',
-            icon: const Icon(Icons.speed),
-            label: const Text('Demo Concurrencia'),
+            tooltip: 'Comparar velocidad',
+            child: const Icon(Icons.speed),
           ),
           const SizedBox(height: 16),
           FloatingActionButton(
