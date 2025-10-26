@@ -16,6 +16,8 @@ from models import (
     EmpleadoUpdate, LoginRequest, Token, UsuarioCreate
 )
 
+from mangum import Mangum
+
 # Crear las tablas en la base de datos
 models.Base.metadata.create_all(bind=engine)
 
@@ -256,3 +258,4 @@ async def root():
             "empleados": ["/empleados", "/empleados/{id}"]
         }
     }
+handler = Mangum(app)
