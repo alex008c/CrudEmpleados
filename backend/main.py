@@ -207,7 +207,7 @@ async def upload_image(
     
     # Validar por content-type O por extensión
     if file.content_type not in allowed_types and f".{file_extension}" not in allowed_extensions:
-        print(f"❌ Tipo rechazado: {file.content_type}, extensión: {file_extension}")
+        print(f"Tipo rechazado: {file.content_type}, extensión: {file_extension}")
         raise HTTPException(
             status_code=400,
             detail=f"Tipo de archivo no permitido. Content-Type: {file.content_type}. Use: jpg, jpeg, png, gif"
@@ -258,4 +258,5 @@ async def root():
             "empleados": ["/empleados", "/empleados/{id}"]
         }
     }
+
 handler = Mangum(app)
