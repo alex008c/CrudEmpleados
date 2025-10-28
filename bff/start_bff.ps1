@@ -1,5 +1,5 @@
-$env:PUBLISH_API_URL = "PENDIENTE_DESPUES_DE_TERRAFORM_APPLY"
-$env:PUBLISH_API_KEY = "PENDIENTE_DESPUES_DE_TERRAFORM_APPLY"
+$env:PUBLISH_API_URL = "https://bnxlpofo59.execute-api.us-east-1.amazonaws.com/dev/publish"
+$env:PUBLISH_API_KEY = "eCR8TZw9xf6zHrf5so2sE3vhKIxKJbqk9BqE4vgJ"
 
 Write-Host "Iniciando BFF..." -ForegroundColor Cyan
 Write-Host "URL: http://localhost:8001" -ForegroundColor Green

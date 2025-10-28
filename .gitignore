@@ -85,3 +85,18 @@ DerivedData
 # OS
 .DS_Store
 Thumbs.db
+
+# Terraform
+.terraform/
+.terraform.lock.hcl
+terraform.tfstate
+terraform.tfstate.backup
+*.tfvars
+!terraform.tfvars.example
+
+# Lambda packages
+infra/lambdas/*.zip
+!infra/lambdas/.gitkeep
+
+# Logs
+*.log

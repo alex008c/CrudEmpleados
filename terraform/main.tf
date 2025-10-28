@@ -5,7 +5,7 @@ terraform {
       version = "~> 5.0"
     }
     docker = {
-      source = "kreuzwerber/docker"
+      source = "kreuzwerker/docker"
       version = "~> 3.0"
     }
   }
@@ -14,11 +14,7 @@ terraform {
 
 provider "docker" {}
 
-variable "api_key_value" {
-  description = "El valor secreto para la API KEY debe ser seguro."
-  type        = string
-  sensitive   = true
-}
+data "aws_caller_identity" "current" {}
 
 variable "aws_region" {
   description = "La región AWS donde se desplegarán los recursos."
@@ -30,4 +26,16 @@ variable "project_name" {
   description = "Un nombre base para identificar los recursos."
   type        = string
   default     = "crud-app"
+}
+
+variable "environment" {
+  description = "Ambiente de despliegue."
+  type        = string
+  default     = "dev"
+}
+
+variable "external_db_url" {
+  description = "URL de conexión a la base de datos externa (ej: Supabase PostgreSQL)."
+  type        = string
+  sensitive   = true
 }
