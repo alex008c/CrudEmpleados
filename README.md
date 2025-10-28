@@ -1,251 +1,500 @@
-# 🚀 CRUD Empleados - Flutter + FastAPI
+# CRUD Empleados - Flutter + FastAPI + AWS# 🚀 CRUD Empleados - Flutter + FastAPI
 
-Sistema completo de gestión de empleados con **arquitectura MVVM**, autenticación JWT, operaciones CRUD y concurrencia medible con Future.wait.
 
-## ⚡ Inicio Rápido
 
-### 🎯 Opción 1: Script Automático (TODO EN UNO)
+Sistema completo de gestión de empleados con arquitectura MVVM, autenticación JWT, operaciones CRUD asíncronas y arquitectura cloud desacoplada en AWS.Sistema completo de gestión de empleados con **arquitectura MVVM**, autenticación JWT, operaciones CRUD y concurrencia medible con Future.wait.
+
+
+
+## Inicio Rápido## ⚡ Inicio Rápido
+
+
+
+### Desarrollo Local### 🎯 Opción 1: Script Automático (TODO EN UNO)
+
 ```powershell
-.\start_all.ps1
+
+**Script automático (Backend + Frontend):**.\start_all.ps1
+
+```powershell```
+
+.\dev.ps1Este script inicia backend y frontend automáticamente en terminales separadas.
+
 ```
-Este script inicia backend y frontend automáticamente en terminales separadas.
 
 ### 🔧 Opción 2: Scripts Individuales (2 TERMINALES)
 
-**Terminal 1 - Backend:**
-```powershell
-.\start_backend.ps1
+**Solo Backend:**
+
+```powershell**Terminal 1 - Backend:**
+
+.\run_backend.ps1```powershell
+
+```.\start_backend.ps1
+
 ```
 
-**Terminal 2 - Frontend:**
-```powershell
-.\start_frontend.ps1
-```
+**Solo Frontend:**
 
-### 💻 Opción 3: Comandos Manuales
+```powershell**Terminal 2 - Frontend:**
 
-**Terminal 1 - Backend:**
-```powershell
-cd backend
-python -m uvicorn main:app --reload
-```
+cd frontend```powershell
 
-**Terminal 2 - Frontend:**
+flutter run -d windows.\start_frontend.ps1
+
+``````
+
+
+
+---### 💻 Opción 3: Comandos Manuales
+
+
+
+## Características Principales**Terminal 1 - Backend:**
+
 ```powershell
-cd frontend
+
+### Backend (FastAPI + Python)cd backend
+
+- Autenticación con JWTpython -m uvicorn main:app --reload
+
+- API REST completa con async/await```
+
+- PostgreSQL (Supabase) en producción
+
+- Documentación automática (Swagger)**Terminal 2 - Frontend:**
+
+- Upload de imágenes con validación```powershell
+
+- CORS configuradocd frontend
+
 flutter run -d windows  # O: flutter run -d chrome
-```
 
----
+### Frontend (Flutter + Dart)```
 
-## 📋 Características Principales
+- Arquitectura MVVM (Model-View-ViewModel)
 
-### ✅ **Backend FastAPI (Python)**
+- Login con persistencia de tokens (SharedPreferences)---
+
+- Concurrencia medible (Future.wait vs secuencial)
+
+- Gestión de estado con Provider## 📋 Características Principales
+
+- UI Material Design 3
+
+- Selección y upload de imágenes### ✅ **Backend FastAPI (Python)**
+
 - ✨ Autenticación con JWT (30 min expiration)
-- 🔄 API REST completa (CRUD)
-- 💾 SQLite (desarrollo) / PostgreSQL (producción)
-- ⚡ Endpoints async/await
-- 🌐 CORS configurado
-- 📚 Documentación automática (Swagger)
-- 📸 **Upload de imágenes** con validación (5MB máx)
-- 📁 Servicio de archivos estáticos
 
-### ✅ **Frontend Flutter (Dart)**
+### Arquitectura AWS- 🔄 API REST completa (CRUD)
+
+- API Gateway con API Key- 💾 SQLite (desarrollo) / PostgreSQL (producción)
+
+- SNS (Simple Notification Service)- ⚡ Endpoints async/await
+
+- SQS (Simple Queue Service) + Dead Letter Queue- 🌐 CORS configurado
+
+- Lambda Functions (Python 3.11)- 📚 Documentación automática (Swagger)
+
+- CloudWatch Logs- 📸 **Upload de imágenes** con validación (5MB máx)
+
+- Infraestructura como código (Terraform)- 📁 Servicio de archivos estáticos
+
+
+
+---### ✅ **Frontend Flutter (Dart)**
+
 - 🏛️ **Arquitectura MVVM** (Model-View-ViewModel)
-- 🔐 Login con validación y persistencia de tokens
+
+## Estructura del Proyecto- 🔐 Login con validación y persistencia de tokens
+
 - 🏃‍♂️ **Concurrencia medible** (Future.wait vs secuencial)
-- 🔄 Actualización automática con Provider
-- 🎨 UI Material Design 3
-- 💾 Gestión de estado con ChangeNotifier
-- 📷 **Selección de imágenes** (galería/cámara)
-- 🖼️ Vista previa y subida de fotos
 
-### 🎯 **Criterios de Evaluación (10 puntos)**
-- ✅ **Arquitectura MVVM** - Separación View/ViewModel/Repository (2 pts)
-- ✅ **Concurrencia medible** - Demo con tiempos visibles (2 pts)
-- ✅ **Login con Backend** - JWT + persistencia (2 pts)
-- ✅ **CRUD funcional** - CREATE, READ, UPDATE, DELETE (2 pts)
-- ✅ **Documentación completa** - Evidencias y guías (2 pts)
+```- 🔄 Actualización automática con Provider
 
-## 🏗️ Arquitectura MVVM
+CrudEmpleados/- 🎨 UI Material Design 3
 
-```
-CrudEmpleados/
-├── backend/                    # API FastAPI (Python)
-│   ├── main.py                # Endpoints REST
-│   ├── models.py              # Modelos SQLAlchemy + Pydantic
-│   ├── auth.py                # JWT generation/validation
-│   ├── database.py            # DB config (SQLite/PostgreSQL)
-│   └── requirements.txt       # Dependencias Python
+├── backend/                    # API FastAPI- 💾 Gestión de estado con ChangeNotifier
+
+│   ├── main.py                # Endpoints REST- 📷 **Selección de imágenes** (galería/cámara)
+
+│   ├── models.py              # SQLAlchemy + Pydantic- 🖼️ Vista previa y subida de fotos
+
+│   ├── auth.py                # JWT
+
+│   ├── database.py            # PostgreSQL (Supabase)### 🎯 **Criterios de Evaluación (10 puntos)**
+
+│   └── requirements.txt- ✅ **Arquitectura MVVM** - Separación View/ViewModel/Repository (2 pts)
+
+│- ✅ **Concurrencia medible** - Demo con tiempos visibles (2 pts)
+
+├── frontend/lib/              # Flutter App- ✅ **Login con Backend** - JWT + persistencia (2 pts)
+
+│   ├── models/                # Data models- ✅ **CRUD funcional** - CREATE, READ, UPDATE, DELETE (2 pts)
+
+│   ├── repositories/          # Data access layer- ✅ **Documentación completa** - Evidencias y guías (2 pts)
+
+│   ├── viewmodels/            # Business logic
+
+│   └── screens/               # UI (Views)## 🏗️ Arquitectura MVVM
+
 │
-├── frontend/                  # Aplicación Flutter (Dart)
-│   ├── lib/
-│   │   ├── main.dart         # MultiProvider setup
-│   │   ├── models/
-│   │   │   └── empleado.dart # Data model
-│   │   ├── repositories/     # 📁 DATA LAYER
+
+├── bff/                       # Backend For Frontend```
+
+│   ├── main.py               # FastAPI middlewareCrudEmpleados/
+
+│   └── requirements.txt├── backend/                    # API FastAPI (Python)
+
+││   ├── main.py                # Endpoints REST
+
+├── terraform/                 # Infrastructure as Code│   ├── models.py              # Modelos SQLAlchemy + Pydantic
+
+│   ├── main.tf│   ├── auth.py                # JWT generation/validation
+
+│   ├── vpc.tf│   ├── database.py            # DB config (SQLite/PostgreSQL)
+
+│   ├── crud_backend.tf│   └── requirements.txt       # Dependencias Python
+
+│   ├── messaging.tf│
+
+│   └── api_gateway_email.tf├── frontend/                  # Aplicación Flutter (Dart)
+
+││   ├── lib/
+
+└── infra/lambdas/            # AWS Lambda Functions│   │   ├── main.dart         # MultiProvider setup
+
+    ├── publisher_lambda/│   │   ├── models/
+
+    └── email_lambda/│   │   │   └── empleado.dart # Data model
+
+```│   │   ├── repositories/     # 📁 DATA LAYER
+
 │   │   │   ├── auth_repository.dart      # Login, tokens
-│   │   │   └── empleado_repository.dart  # CRUD + concurrencia
+
+---│   │   │   └── empleado_repository.dart  # CRUD + concurrencia
+
 │   │   ├── viewmodels/       # 📁 BUSINESS LOGIC
-│   │   │   ├── auth_viewmodel.dart       # Auth state
+
+## Arquitectura MVVM│   │   │   ├── auth_viewmodel.dart       # Auth state
+
 │   │   │   └── empleado_viewmodel.dart   # CRUD coordination
-│   │   └── screens/          # 📁 UI LAYER (VIEWS)
-│   │       ├── login_screen.dart         # Consumer<AuthViewModel>
-│   │       ├── home_screen.dart          # Consumer<EmpleadoViewModel>
-│   │       └── empleado_form_screen.dart # Create/Edit form
+
+**View (Screens):**│   │   └── screens/          # 📁 UI LAYER (VIEWS)
+
+- Renderiza UI│   │       ├── login_screen.dart         # Consumer<AuthViewModel>
+
+- Captura eventos del usuario│   │       ├── home_screen.dart          # Consumer<EmpleadoViewModel>
+
+- No contiene lógica de negocio│   │       └── empleado_form_screen.dart # Create/Edit form
+
 │   └── pubspec.yaml          # Dependencias
-│
-├── docs/                      # 📚 Documentación
-│   ├── INDICE.md             # Índice completo
-│   ├── EVIDENCIAS.md         # ⭐ EVIDENCIAS DE EVALUACIÓN
+
+**ViewModel:**│
+
+- Gestiona estado de la UI├── docs/                      # 📚 Documentación
+
+- Coordina operaciones│   ├── INDICE.md             # Índice completo
+
+- Notifica cambios a las Views│   ├── EVIDENCIAS.md         # ⭐ EVIDENCIAS DE EVALUACIÓN
+
 │   ├── GUIA_DESARROLLADORES.md  # Guía técnica
-│   ├── DOCUMENTACION.md      # Arquitectura detallada
-│   └── ...más docs
-│
-└── Scripts de inicio          # 🚀 Automatización
+
+**Repository:**│   ├── DOCUMENTACION.md      # Arquitectura detallada
+
+- Maneja peticiones HTTP│   └── ...más docs
+
+- Persistencia local│
+
+- Abstrae la fuente de datos└── Scripts de inicio          # 🚀 Automatización
+
     ├── start_all.ps1         # Inicia todo automáticamente
-    ├── start_backend.ps1     # Solo backend
-    └── start_frontend.ps1    # Solo frontend
+
+**Model:**    ├── start_backend.ps1     # Solo backend
+
+- Estructuras de datos    └── start_frontend.ps1    # Solo frontend
+
+- Serialización JSON```
+
+
+
+------
+
+
+
+## Flujo de Arquitectura Cloud## 🔧 Instalación (Solo primera vez)
+
+
+
+```### **Requisitos:**
+
+Frontend- Python 3.11+
+
+    ↓- Flutter 3.0+
+
+BFF (Backend For Frontend)- VS Code (recomendado)
+
+    ↓
+
+API Gateway (x-api-key)### **Instalación automática:**
+
+    ↓Ejecuta cualquier script de inicio y las dependencias se instalarán automáticamente:
+
+Lambda Publisher```powershell
+
+    ↓.\start_all.ps1
+
+SNS Topic```
+
+    ↓DATABASE_URL = "postgresql://usuario:password@localhost:5432/empleados_db"
+
+SQS Queue → Dead Letter Queue```
+
+    ↓
+
+Lambda Email**Opción B: SQLite (Rápido para desarrollo)**
+
+    ↓
+
+CloudWatch LogsEdita `database.py` línea 6:
+
 ```
-
----
-
-## 🔧 Instalación (Solo primera vez)
-
-### **Requisitos:**
-- Python 3.11+
-- Flutter 3.0+
-- VS Code (recomendado)
-
-### **Instalación automática:**
-Ejecuta cualquier script de inicio y las dependencias se instalarán automáticamente:
-```powershell
-.\start_all.ps1
-```
-DATABASE_URL = "postgresql://usuario:password@localhost:5432/empleados_db"
-```
-
-**Opción B: SQLite (Rápido para desarrollo)**
-
-Edita `database.py` línea 6:
 
 ```python
-DATABASE_URL = "sqlite:///./empleados.db"
+
+---DATABASE_URL = "sqlite:///./empleados.db"
+
 ```
+
+## Despliegue en AWS
 
 #### 3. Ejecutar el servidor
 
-```powershell
-uvicorn main:app --reload --host 0.0.0.0 --port 8000
-```
+### Requisitos
+
+- AWS CLI configurado```powershell
+
+- Terraform instaladouvicorn main:app --reload --host 0.0.0.0 --port 8000
+
+- Python 3.11+```
+
+- Flutter SDK
 
 El backend estará en: `http://localhost:8000`
 
+### Pasos
+
 Documentación interactiva: `http://localhost:8000/docs`
 
-### **Frontend (Flutter)**
+1. **Desplegar infraestructura:**
 
-#### 1. Instalar Flutter
+```powershell### **Frontend (Flutter)**
 
-Descarga desde: https://flutter.dev/docs/get-started/install
+cd terraform
 
-#### 2. Verificar instalación
+terraform init#### 1. Instalar Flutter
+
+terraform apply
+
+```Descarga desde: https://flutter.dev/docs/get-started/install
+
+
+
+2. **Configurar BFF:**#### 2. Verificar instalación
 
 ```powershell
-flutter doctor
-```
 
-#### 3. Instalar dependencias
+# Copiar outputs de Terraform```powershell
 
-```powershell
-cd frontend
+terraform output email_api_urlflutter doctor
+
+terraform output email_api_key```
+
+
+
+# Configurar variables de entorno#### 3. Instalar dependencias
+
+$env:PUBLISH_API_URL = "https://..."
+
+$env:PUBLISH_API_KEY = "..."```powershell
+
+```cd frontend
+
 flutter pub get
+
+3. **Iniciar BFF:**```
+
+```powershell
+
+cd bff#### 4. Configurar URL del backend
+
+pip install -r requirements.txt
+
+uvicorn main:app --reload --port 8001Edita `lib/services/api_service.dart` línea 9:
+
 ```
-
-#### 4. Configurar URL del backend
-
-Edita `lib/services/api_service.dart` línea 9:
 
 ```dart
-static const String baseUrl = 'http://TU_IP:8000';
-```
 
-**Nota importante:**
+4. **Probar el flujo completo:**static const String baseUrl = 'http://TU_IP:8000';
+
+- Ejecutar frontend```
+
+- Usar modal de envío de correo
+
+- Verificar logs en CloudWatch**Nota importante:**
+
 - Para Android emulator: usa `http://10.0.2.2:8000`
-- Para iOS simulator: usa `http://localhost:8000`
+
+Ver documentación completa en: `docs/DESPLIEGUE_AWS.md`- Para iOS simulator: usa `http://localhost:8000`
+
 - Para dispositivo físico: usa tu IP local (ej: `http://192.168.1.100:8000`)
+
+---
 
 #### 5. Ejecutar la aplicación
 
+## Endpoints API
+
 ```powershell
-flutter run
-```
+
+### Autenticaciónflutter run
+
+- `POST /auth/register` - Registro de usuarios```
+
+- `POST /auth/login` - Login (retorna JWT)
 
 O presiona **F5** en VS Code con el dispositivo/emulador conectado.
 
-## 🔐 Uso del Sistema
+### CRUD Empleados (requiere JWT)
 
-### 1. Primera vez - Registrar usuario
+- `GET /empleados` - Listar empleados (paginado)## 🔐 Uso del Sistema
 
-1. Abre la app Flutter
+- `GET /empleados/{id}` - Obtener empleado
+
+- `POST /empleados` - Crear empleado### 1. Primera vez - Registrar usuario
+
+- `PUT /empleados/{id}` - Actualizar empleado
+
+- `DELETE /empleados/{id}` - Eliminar empleado1. Abre la app Flutter
+
 2. Clic en "¿No tienes cuenta? Regístrate"
-3. Ingresa usuario y contraseña
-4. Luego haz login normalmente
 
-### 2. Login
+### Archivos3. Ingresa usuario y contraseña
+
+- `POST /upload-image` - Subir imagen (5MB máx)4. Luego haz login normalmente
+
+
+
+### Mensajería (BFF)### 2. Login
+
+- `POST /notify/email` - Enviar correo (vía SNS/SQS)
 
 - Usuario: `tu_usuario`
-- Contraseña: `tu_contraseña`
 
-### 3. Operaciones CRUD
+---- Contraseña: `tu_contraseña`
 
-- **Crear**: Botón `+` flotante
-- **Leer**: Lista principal (pull to refresh)
-- **Actualizar**: Clic en lápiz o en la tarjeta
-- **Eliminar**: Clic en icono de basura
 
-### 4. Demo de carga paralela
 
-- Botón de sincronización ⟳ en el AppBar
-- Carga múltiples empleados simultáneamente usando `Future.wait`
+## Variables de Entorno### 3. Operaciones CRUD
+
+
+
+### Backend- **Crear**: Botón `+` flotante
+
+```powershell- **Leer**: Lista principal (pull to refresh)
+
+$env:DATABASE_URL = "postgresql://user:pass@host:port/db"- **Actualizar**: Clic en lápiz o en la tarjeta
+
+```- **Eliminar**: Clic en icono de basura
+
+
+
+### BFF### 4. Demo de carga paralela
+
+```powershell
+
+$env:PUBLISH_API_URL = "https://api-id.execute-api.region.amazonaws.com/stage/publish"- Botón de sincronización ⟳ en el AppBar
+
+$env:PUBLISH_API_KEY = "your-api-key"- Carga múltiples empleados simultáneamente usando `Future.wait`
+
+```
 
 ## 📡 Endpoints de la API
 
+---
+
 ### Autenticación
 
+## Tecnologías
+
 ```
-POST /auth/login       - Login (retorna JWT)
-POST /auth/register    - Registro de usuario
-```
+
+**Backend:**POST /auth/login       - Login (retorna JWT)
+
+- FastAPI, UvicornPOST /auth/register    - Registro de usuario
+
+- SQLAlchemy, psycopg2-binary```
+
+- PyJWT, passlib[bcrypt]
 
 ### CRUD Empleados (requieren token JWT)
 
-```
-GET    /empleados           - Listar todos
-GET    /empleados/{id}      - Obtener uno
+**Frontend:**
+
+- Flutter, Provider```
+
+- http, shared_preferencesGET    /empleados           - Listar todos
+
+- image_pickerGET    /empleados/{id}      - Obtener uno
+
 POST   /empleados           - Crear nuevo
-PUT    /empleados/{id}      - Actualizar
-DELETE /empleados/{id}      - Eliminar
-```
+
+**Infrastructure:**PUT    /empleados/{id}      - Actualizar
+
+- TerraformDELETE /empleados/{id}      - Eliminar
+
+- AWS (Lambda, API Gateway, SNS, SQS, CloudWatch)```
+
+- Docker (para despliegue)
 
 ## 🧪 Pruebas Rápidas
 
+---
+
 ### Probar Backend con curl:
 
-```powershell
-# Registrar usuario
-curl -X POST http://localhost:8000/auth/register -H "Content-Type: application/json" -d '{\"username\":\"admin\",\"password\":\"admin123\"}'
+## Documentación
 
-# Login
+```powershell
+
+- `docs/DESPLIEGUE_AWS.md` - Guía completa de despliegue# Registrar usuario
+
+- `docs/GUIA_DESARROLLADORES.md` - Para desarrolladores nuevoscurl -X POST http://localhost:8000/auth/register -H "Content-Type: application/json" -d '{\"username\":\"admin\",\"password\":\"admin123\"}'
+
+- `docs/INDICE.md` - Índice de documentación
+
+- `docs/EVIDENCIAS.md` - Diagramas y capturas# Login
+
 curl -X POST http://localhost:8000/auth/login -H "Content-Type: application/json" -d '{\"username\":\"admin\",\"password\":\"admin123\"}'
 
+---
+
 # Usar el token recibido
-curl -X GET http://localhost:8000/empleados -H "Authorization: Bearer TU_TOKEN_AQUI"
+
+## Autorcurl -X GET http://localhost:8000/empleados -H "Authorization: Bearer TU_TOKEN_AQUI"
+
 ```
+
+Proyecto universitario - Arquitectura Cloud con Terraform
 
 ## 🐛 Solución de Problemas
 
+## Licencia
+
 ### Backend no inicia
+
+MIT
 
 - Verifica que instalaste todas las dependencias: `pip install -r requirements.txt`
 - Verifica la conexión a la base de datos en `database.py`

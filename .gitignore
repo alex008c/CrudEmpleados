@@ -6,6 +6,7 @@ __pycache__/
 .Python
 env/
 venv/
+.venv/
 ENV/
 build/
 develop-eggs/
@@ -27,6 +28,15 @@ wheels/
 *.db
 *.sqlite
 *.sqlite3
+empleados.db
+
+# Archivos subidos
+uploads/
+*.jpg
+*.png
+*.gif
+!docs/*.png
+!docs/*.jpg
 
 # Flutter/Dart
 .dart_tool/

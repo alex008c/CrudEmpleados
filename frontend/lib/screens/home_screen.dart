@@ -5,6 +5,7 @@ import '../viewmodels/empleado_viewmodel.dart';
 import '../viewmodels/auth_viewmodel.dart';
 import 'empleado_form_screen.dart';
 import 'login_screen.dart';
+import 'email_dialog.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -429,6 +430,19 @@ class _HomeScreenState extends State<HomeScreen> {
       floatingActionButton: Column(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
+          FloatingActionButton(
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (context) => const EmailDialog(),
+              );
+            },
+            backgroundColor: Colors.green,
+            heroTag: 'email',
+            tooltip: 'Enviar correo',
+            child: const Icon(Icons.email),
+          ),
+          const SizedBox(height: 16),
           FloatingActionButton(
             onPressed: _demostrarConcurrencia,
             backgroundColor: Colors.orange,
