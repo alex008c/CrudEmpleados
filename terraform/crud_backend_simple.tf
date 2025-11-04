@@ -29,7 +29,7 @@ resource "aws_iam_role" "crud_lambda_role" {
   }
 }
 
-# Policy para el backend CRUD Lambda
+# Policy para el backend CRUD Lambda (con permisos SNS)
 resource "aws_iam_policy" "crud_lambda_policy" {
   name = "${var.project_name}-crud-lambda-policy"
 
@@ -45,6 +45,11 @@ resource "aws_iam_policy" "crud_lambda_policy" {
         Effect   = "Allow",
         Action   = ["logs:CreateLogStream", "logs:PutLogEvents"],
         Resource = "arn:aws:logs:${var.aws_region}:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/${var.project_name}-crud-lambda:*",
+      },
+      {
+        Effect   = "Allow",
+        Action   = ["sns:Publish"],
+        Resource = aws_sns_topic.email_topic.arn
       }
     ],
   })
@@ -55,11 +60,11 @@ resource "aws_iam_role_policy_attachment" "crud_lambda_policy_attach" {
   policy_arn = aws_iam_policy.crud_lambda_policy.arn
 }
 
-# Lambda Function para backend CRUD
+# Lambda Function para backend CRUD (handler simplificado sin FastAPI)
 resource "aws_lambda_function" "crud_lambda" {
   function_name = "${var.project_name}-crud-lambda"
-  filename      = data.archive_file.crud_backend_zip.output_path
-  source_code_hash = data.archive_file.crud_backend_zip.output_base64sha256
+  filename      = "${path.module}/../infra/lambdas/crud_simple.zip"
+  source_code_hash = filebase64sha256("${path.module}/../infra/lambdas/crud_simple.zip")
   
   role    = aws_iam_role.crud_lambda_role.arn
   handler = "main.handler"
@@ -71,6 +76,7 @@ resource "aws_lambda_function" "crud_lambda" {
   environment {
     variables = {
       DATABASE_URL = var.external_db_url
+      SNS_TOPIC_ARN = aws_sns_topic.email_topic.arn
     }
   }
 

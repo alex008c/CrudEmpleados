@@ -15,7 +15,11 @@ class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   // Configuración de la URL del backend
+  // *** DESARROLLO LOCAL (Backend FastAPI con autenticación) ***
   static const String apiBaseUrl = 'http://127.0.0.1:8000';
+  
+  // Para usar AWS ALB (sin autenticación), descomentar:
+  // static const String apiBaseUrl = 'http://crud-app-alb-465693216.us-east-1.elb.amazonaws.com';
   // Para Android Emulator: 'http://10.0.2.2:8000'
   // Para dispositivo físico: 'http://TU_IP_LOCAL:8000'
 

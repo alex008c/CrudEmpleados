@@ -118,6 +118,14 @@ resource "aws_iam_policy" "email_lambda_policy" {
           "sns:Publish"
         ]
         Resource = aws_sns_topic.email_topic.arn
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "ses:SendEmail",
+          "ses:SendRawEmail"
+        ]
+        Resource = "*"
       }
     ]
   })

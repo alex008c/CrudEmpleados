@@ -17,6 +17,7 @@ class EmpleadoViewModel extends ChangeNotifier {
   bool _isLoading = false;
   String? _errorMessage;
   Empleado? _selectedEmpleado;
+  bool _disposed = false;
 
   // Getters (exponen el estado de forma inmutable)
   List<Empleado> get empleados => List.unmodifiable(_empleados);
@@ -35,7 +36,9 @@ class EmpleadoViewModel extends ChangeNotifier {
 
     try {
       _empleados = await _repository.getEmpleados();
-      notifyListeners(); // Notifica a la UI que hay cambios
+      if (!_disposed) {
+        notifyListeners(); // Notifica a la UI que hay cambios
+      }
     } catch (e) {
       _setError('Error al cargar empleados: $e');
     } finally {
@@ -50,7 +53,9 @@ class EmpleadoViewModel extends ChangeNotifier {
 
     try {
       _selectedEmpleado = await _repository.getEmpleadoById(id);
-      notifyListeners();
+      if (!_disposed) {
+        notifyListeners();
+      }
     } catch (e) {
       _setError('Error al cargar empleado: $e');
     } finally {
@@ -138,26 +143,34 @@ class EmpleadoViewModel extends ChangeNotifier {
 
   void _setLoading(bool value) {
     _isLoading = value;
-    notifyListeners();
+    if (!_disposed) {
+      notifyListeners();
+    }
   }
 
   void _setError(String message) {
     _errorMessage = message;
-    notifyListeners();
+    if (!_disposed) {
+      notifyListeners();
+    }
   }
 
   void _clearError() {
     _errorMessage = null;
+    if (!_disposed) {
+      notifyListeners();
+    }
   }
 
   void clearError() {
     _clearError();
-    notifyListeners();
   }
 
   void selectEmpleado(Empleado? empleado) {
     _selectedEmpleado = empleado;
-    notifyListeners();
+    if (!_disposed) {
+      notifyListeners();
+    }
   }
 
   // ==================== UTILIDADES ====================
@@ -222,5 +235,11 @@ class EmpleadoViewModel extends ChangeNotifier {
     print('Demo completada: ${resultado.mejoraPorcentaje}% de mejora');
     
     return resultado;
+  }
+
+  @override
+  void dispose() {
+    _disposed = true;
+    super.dispose();
   }
 }

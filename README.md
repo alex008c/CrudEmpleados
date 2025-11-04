@@ -1,310 +1,905 @@
-# CRUD Empleados - Flutter + FastAPI + AWS# 🚀 CRUD Empleados - Flutter + FastAPI
+# Sistema CRUD de Empleados con AWS# CRUD Empleados con AWS# CRUD Empleados - Flutter + FastAPI + AWS# 🚀 CRUD Empleados - Flutter + FastAPI
 
 
 
-Sistema completo de gestión de empleados con arquitectura MVVM, autenticación JWT, operaciones CRUD asíncronas y arquitectura cloud desacoplada en AWS.Sistema completo de gestión de empleados con **arquitectura MVVM**, autenticación JWT, operaciones CRUD y concurrencia medible con Future.wait.
+Sistema completo de gestión de empleados implementado con arquitectura serverless en AWS, utilizando Application Load Balancer, Lambda Functions, API Gateway, PostgreSQL y sistema de notificaciones.
 
 
 
-## Inicio Rápido## ⚡ Inicio Rápido
+## Tareas CompletadasSistema de gestión de empleados con arquitectura serverless en AWS, implementando comunicación asíncrona mediante SNS/SQS.
 
 
 
-### Desarrollo Local### 🎯 Opción 1: Script Automático (TODO EN UNO)
+- ✅ **Tarea 1:** Sistema CRUD con SNS/SQS/SES (35 recursos AWS)
+
+- ✅ **Tarea 2:** Load Balancing con ALB + Auto Scaling Lambda (51 recursos AWS)
+
+## DescripciónSistema completo de gestión de empleados con arquitectura MVVM, autenticación JWT, operaciones CRUD asíncronas y arquitectura cloud desacoplada en AWS.Sistema completo de gestión de empleados con **arquitectura MVVM**, autenticación JWT, operaciones CRUD y concurrencia medible con Future.wait.
+
+## Arquitectura
+
+
+
+```
+
+Cliente → ALB (Multi-AZ) → Lambda BFF → API Gateway → Lambda CRUD → PostgreSQLProyecto que implementa:
+
+                                                              ↓
+
+                                                         SNS → SQS → Lambda Email → SES- Backend CRUD con FastAPI y autenticación JWT
+
+```
+
+- Servicio de correo electrónico asíncrono en AWS## Inicio Rápido## ⚡ Inicio Rápido
+
+### Componentes
+
+- Frontend Flutter con arquitectura MVVM
+
+**Networking:**
+
+- VPC 10.0.0.0/16 con 2 subnets públicas (Multi-AZ)- Infraestructura como código con Terraform
+
+- Internet Gateway y Route Tables
+
+- Security Groups- 35 recursos AWS desplegados
+
+
+
+**Load Balancing:**### Desarrollo Local### 🎯 Opción 1: Script Automático (TODO EN UNO)
+
+- Application Load Balancer (internet-facing)
+
+- Target Group con health checks (/health cada 35s)## Arquitectura
+
+- Listener HTTP puerto 80
 
 ```powershell
 
-**Script automático (Backend + Frontend):**.\start_all.ps1
+**Compute:**
 
-```powershell```
+- Lambda BFF (proxy ALB → API Gateway)### Backend CRUD
 
-.\dev.ps1Este script inicia backend y frontend automáticamente en terminales separadas.
+- Lambda CRUD (SQLAlchemy + PostgreSQL + SNS)
+
+- Lambda Email (procesamiento SQS → SES)```**Script automático (Backend + Frontend):**.\start_all.ps1
+
+
+
+**API Gateway:**Frontend Flutter → Backend FastAPI → PostgreSQL (Supabase)
+
+- HTTP API CRUD
+
+- HTTP API Email Publisher``````powershell```
+
+
+
+**Messaging:**
+
+- SNS Topic (notificaciones)
+
+- SQS Queue + DLQ### Servicio de Correo (AWS).\dev.ps1Este script inicia backend y frontend automáticamente en terminales separadas.
+
+- SES (envío de emails)
 
 ```
 
-### 🔧 Opción 2: Scripts Individuales (2 TERMINALES)
+**Monitoring:**
 
-**Solo Backend:**
+- CloudWatch DashboardFrontend → BFF → API Gateway → Lambda Publisher ```
 
-```powershell**Terminal 1 - Backend:**
+- 5 alarmas configuradas
 
-.\run_backend.ps1```powershell
+- Logs centralizados  → SNS Topic → SQS Queue → Lambda Email → Amazon SES
 
-```.\start_backend.ps1
+
+
+## Estructura del Proyecto```### 🔧 Opción 2: Scripts Individuales (2 TERMINALES)
+
+
 
 ```
 
-**Solo Frontend:**
+CrudEmpleados/
 
-```powershell**Terminal 2 - Frontend:**
+├── backend/              # FastAPI CRUD (desarrollo local)## Tecnologías**Solo Backend:**
 
-cd frontend```powershell
+├── bff/                  # Lambda BFF (proxy ALB → API Gateway)
 
-flutter run -d windows.\start_frontend.ps1
+├── lambda_crud_simple/   # Lambda CRUD con PostgreSQL + SNS
+
+├── terraform/            # IaC (51 recursos AWS)
+
+│   ├── alb.tf           # Application Load Balancer**Backend:**```powershell**Terminal 1 - Backend:**
+
+│   ├── networking.tf    # VPC, Subnets, IGW
+
+│   ├── crud_backend_simple.tf  # Lambda CRUD- FastAPI
+
+│   ├── bff_lambda.tf    # Lambda BFF
+
+│   ├── messaging.tf     # SNS, SQS, Lambda Email- SQLAlchemy.\run_backend.ps1```powershell
+
+│   ├── monitoring.tf    # CloudWatch
+
+│   └── main.tf          # Variables y provider- JWT (python-jose)
+
+├── frontend/            # Flutter App (arquitectura MVVM)
+
+├── docs/                # Documentación técnica- bcrypt```.\start_backend.ps1
+
+└── infra/lambdas/       # Deployment packages (.zip)
+
+```- PostgreSQL
+
+
+
+## Inicio Rápido```
+
+
+
+### Requisitos**Frontend:**
+
+
+
+- Terraform >= 1.0- Flutter**Solo Frontend:**
+
+- AWS CLI configurado
+
+- Python 3.11+- Provider (State Management)
+
+- Node.js (para frontend opcional)
+
+- MVVM Architecture```powershell**Terminal 2 - Frontend:**
+
+### 1. Configurar Variables
+
+
+
+```bash
+
+cd terraform**AWS:**cd frontend```powershell
+
+cp terraform.tfvars.example terraform.tfvars
+
+# Editar terraform.tfvars con tu DATABASE_URL- Lambda (3 funciones)
+
+```
+
+- API Gateway (2 APIs)flutter run -d windows.\start_frontend.ps1
+
+### 2. Desplegar Infraestructura
+
+- SNS (1 topic)
+
+```bash
+
+terraform init- SQS (2 queues con DLQ)``````
+
+terraform plan
+
+terraform apply- Amazon SES
+
+```
+
+- CloudWatch
+
+Esto despliega:
+
+- ALB con DNS público- IAM
+
+- 3 Lambda Functions
+
+- VPC con Multi-AZ---### 💻 Opción 3: Comandos Manuales
+
+- CloudWatch monitoring
+
+- SNS/SQS/SES messaging**Infraestructura:**
+
+
+
+### 3. Verificar Deployment- Terraform
+
+
+
+```bash- 35 recursos AWS
+
+# Ver ALB
+
+aws elbv2 describe-load-balancers --names crud-app-alb## Características Principales**Terminal 1 - Backend:**
+
+
+
+# Probar endpoint## Requisitos Previos
+
+curl http://crud-app-alb-XXXXXXXXX.us-east-1.elb.amazonaws.com/empleados
+
+``````powershell
+
+
+
+## Comandos Útiles- Python 3.11
+
+
+
+### Terraform- Flutter 3.x### Backend (FastAPI + Python)cd backend
+
+
+
+```bash- AWS CLI
+
+# Ver recursos desplegados
+
+terraform state list- Terraform 1.x- Autenticación con JWTpython -m uvicorn main:app --reload
+
+
+
+# Ver outputs
+
+terraform output
+
+## Instalación- API REST completa con async/await```
+
+# Destruir infraestructura
+
+terraform destroy
+
+```
+
+### 1. Clonar el Repositorio- PostgreSQL (Supabase) en producción
+
+### AWS CLI
+
+```bash
+
+```bash
+
+# Ver Lambda Functionsgit clone <repository-url>- Documentación automática (Swagger)**Terminal 2 - Frontend:**
+
+aws lambda list-functions --query "Functions[?contains(FunctionName, 'crud-app')]"
+
+cd CrudEmpleados
+
+# Ver logs de Lambda CRUD
+
+aws logs tail /aws/lambda/crud-app-crud-lambda --follow```- Upload de imágenes con validación```powershell
+
+
+
+# Estado del ALB
+
+aws elbv2 describe-load-balancers --names crud-app-alb
+
+### 2. Instalar Dependencias Backend- CORS configuradocd frontend
+
+# Health de targets
+
+aws elbv2 describe-target-health --target-group-arn <ARN>```powershell
+
+```
+
+cd backendflutter run -d windows  # O: flutter run -d chrome
+
+### Prueba de Carga
+
+pip install -r requirements.txt
+
+```powershell
+
+.\test_carga_v2.ps1```### Frontend (Flutter + Dart)```
+
+```
+
+
+
+Ejecuta 50 requests secuenciales al ALB y muestra métricas de performance.
+
+### 3. Instalar Dependencias BFF- Arquitectura MVVM (Model-View-ViewModel)
+
+## Documentación
+
+```powershell
+
+- **TAREA2_ENTREGA_FINAL.md** - Documento completo de Tarea 2 (Load Balancing)
+
+- **COMANDOS_ALB.md** - Comandos para gestionar ALBcd ../bff- Login con persistencia de tokens (SharedPreferences)---
+
+- **GUIA_INSTALACION.md** - Guía de instalación completa
+
+- **docs/** - Documentación técnica adicionalpip install -r requirements.txt
+
+
+
+## Costos AWS```- Concurrencia medible (Future.wait vs secuencial)
+
+
+
+### Servicios con Costo
+
+
+
+- **ALB:** $0.0225/hora (~$16/mes)### 4. Instalar Dependencias Frontend- Gestión de estado con Provider## 📋 Características Principales
+
+
+
+### Servicios Free Tier```powershell
+
+
+
+- Lambda (1M requests/mes)cd ../frontend- UI Material Design 3
+
+- API Gateway (1M requests/mes)
+
+- SNS (1M publishes/mes)flutter pub get
+
+- SQS (1M requests/mes)
+
+- CloudWatch (10 métricas, 5 alarmas)```- Selección y upload de imágenes### ✅ **Backend FastAPI (Python)**
+
+
+
+**Total estimado:** ~$16-20/mes
+
+
+
+### Optimización## Ejecución- ✨ Autenticación con JWT (30 min expiration)
+
+
+
+Para minimizar costos después de desarrollo:
+
+
+
+```bash### Opción 1: Script Automatizado (Recomendado)### Arquitectura AWS- 🔄 API REST completa (CRUD)
+
+# Destruir solo el ALB
+
+terraform destroy -target=aws_lb.crud_alb```powershell
+
+
+
+# O destruir todo.\EJECUTAR_TODO.ps1- API Gateway con API Key- 💾 SQLite (desarrollo) / PostgreSQL (producción)
+
+terraform destroy
 
 ``````
 
 
 
----### 💻 Opción 3: Comandos Manuales
+## Resultados de Pruebas- SNS (Simple Notification Service)- ⚡ Endpoints async/await
 
 
 
-## Características Principales**Terminal 1 - Backend:**
-
-```powershell
-
-### Backend (FastAPI + Python)cd backend
-
-- Autenticación con JWTpython -m uvicorn main:app --reload
-
-- API REST completa con async/await```
-
-- PostgreSQL (Supabase) en producción
-
-- Documentación automática (Swagger)**Terminal 2 - Frontend:**
-
-- Upload de imágenes con validación```powershell
-
-- CORS configuradocd frontend
-
-flutter run -d windows  # O: flutter run -d chrome
-
-### Frontend (Flutter + Dart)```
-
-- Arquitectura MVVM (Model-View-ViewModel)
-
-- Login con persistencia de tokens (SharedPreferences)---
-
-- Concurrencia medible (Future.wait vs secuencial)
-
-- Gestión de estado con Provider## 📋 Características Principales
-
-- UI Material Design 3
-
-- Selección y upload de imágenes### ✅ **Backend FastAPI (Python)**
-
-- ✨ Autenticación con JWT (30 min expiration)
-
-### Arquitectura AWS- 🔄 API REST completa (CRUD)
-
-- API Gateway con API Key- 💾 SQLite (desarrollo) / PostgreSQL (producción)
-
-- SNS (Simple Notification Service)- ⚡ Endpoints async/await
-
-- SQS (Simple Queue Service) + Dead Letter Queue- 🌐 CORS configurado
-
-- Lambda Functions (Python 3.11)- 📚 Documentación automática (Swagger)
-
-- CloudWatch Logs- 📸 **Upload de imágenes** con validación (5MB máx)
-
-- Infraestructura como código (Terraform)- 📁 Servicio de archivos estáticos
+### Prueba de Carga (50 requests)Este script inicia:
 
 
 
----### ✅ **Frontend Flutter (Dart)**
+```- Backend en puerto 8000- SQS (Simple Queue Service) + Dead Letter Queue- 🌐 CORS configurado
 
-- 🏛️ **Arquitectura MVVM** (Model-View-ViewModel)
+Success Rate: 100%
 
-## Estructura del Proyecto- 🔐 Login con validación y persistencia de tokens
+Latencia Promedio: 221.78ms- BFF en puerto 8001
 
-- 🏃‍♂️ **Concurrencia medible** (Future.wait vs secuencial)
+P50: 189ms
 
-```- 🔄 Actualización automática con Provider
+P90: 285ms- Frontend Flutter- Lambda Functions (Python 3.11)- 📚 Documentación automática (Swagger)
 
-CrudEmpleados/- 🎨 UI Material Design 3
+Throughput: 4.48 req/seg
 
-├── backend/                    # API FastAPI- 💾 Gestión de estado con ChangeNotifier
+```
 
-│   ├── main.py                # Endpoints REST- 📷 **Selección de imágenes** (galería/cámara)
 
-│   ├── models.py              # SQLAlchemy + Pydantic- 🖼️ Vista previa y subida de fotos
 
-│   ├── auth.py                # JWT
+### Métricas Lambda### Opción 2: Manual- CloudWatch Logs- 📸 **Upload de imágenes** con validación (5MB máx)
 
-│   ├── database.py            # PostgreSQL (Supabase)### 🎯 **Criterios de Evaluación (10 puntos)**
 
-│   └── requirements.txt- ✅ **Arquitectura MVVM** - Separación View/ViewModel/Repository (2 pts)
 
-│- ✅ **Concurrencia medible** - Demo con tiempos visibles (2 pts)
+```
 
-├── frontend/lib/              # Flutter App- ✅ **Login con Backend** - JWT + persistencia (2 pts)
+Cold start: ~2 segundos
 
-│   ├── models/                # Data models- ✅ **CRUD funcional** - CREATE, READ, UPDATE, DELETE (2 pts)
+Warm execution: 150-220ms**Backend:**- Infraestructura como código (Terraform)- 📁 Servicio de archivos estáticos
 
-│   ├── repositories/          # Data access layer- ✅ **Documentación completa** - Evidencias y guías (2 pts)
+Concurrent executions: Auto-scaling 0-1000
+
+Success rate: 93%+```powershell
+
+```
+
+cd backend
+
+## Características Implementadas
+
+$env:DATABASE_URL="postgresql://postgres.fnokvvuodtuewfasqrvp:e0dFVQPJeZLdLAV2@aws-1-us-east-2.pooler.supabase.com:6543/postgres"
+
+### Alta Disponibilidad
+
+- Multi-AZ deployment (us-east-1a, us-east-1b)python -m uvicorn main:app --reload---### ✅ **Frontend Flutter (Dart)**
+
+- Health checks automáticos
+
+- Auto-scaling serverless```
+
+
+
+### Seguridad- 🏛️ **Arquitectura MVVM** (Model-View-ViewModel)
+
+- Security Groups restrictivos
+
+- IAM roles con permisos mínimos**BFF:**
+
+- JWT authentication (en desarrollo local)
+
+```powershell## Estructura del Proyecto- 🔐 Login con validación y persistencia de tokens
+
+### Monitoreo
+
+- CloudWatch Dashboardcd bff
+
+- Alarmas configuradas:
+
+  - ALB 5XX errors$env:PUBLISH_API_URL="https://bnxlpofo59.execute-api.us-east-1.amazonaws.com/dev/publish"- 🏃‍♂️ **Concurrencia medible** (Future.wait vs secuencial)
+
+  - Response time > 1s
+
+  - Unhealthy targets$env:PUBLISH_API_KEY="eCR8TZw9xf6zHrf5so2sE3vhKIxKJbqk9BqE4vgJ"
+
+  - Lambda errors
+
+  - High concurrencypython -m uvicorn main:app --reload --port 8001```- 🔄 Actualización automática con Provider
+
+
+
+### Integración```
+
+- CRUD completo (GET, POST, PUT, DELETE)
+
+- Notificaciones email automáticasCrudEmpleados/- 🎨 UI Material Design 3
+
+- Logs centralizados en CloudWatch
+
+**Frontend:**
+
+## Recursos AWS Desplegados
+
+```powershell├── backend/                    # API FastAPI- 💾 Gestión de estado con ChangeNotifier
+
+**Total:** 51 recursos
+
+cd frontend
+
+- 1 VPC
+
+- 2 Subnetsflutter run -d windows│   ├── main.py                # Endpoints REST- 📷 **Selección de imágenes** (galería/cámara)
+
+- 1 Internet Gateway
+
+- 2 Route Tables```
+
+- 1 Security Group
+
+- 1 Application Load Balancer│   ├── models.py              # SQLAlchemy + Pydantic- 🖼️ Vista previa y subida de fotos
+
+- 1 Target Group
+
+- 1 Listener## Despliegue AWS
+
+- 3 Lambda Functions
+
+- 2 API Gateways│   ├── auth.py                # JWT
+
+- 1 SNS Topic
+
+- 2 SQS Queues### Configurar AWS CLI
+
+- 5 CloudWatch Alarms
+
+- 1 CloudWatch Dashboard```powershell│   ├── database.py            # PostgreSQL (Supabase)### 🎯 **Criterios de Evaluación (10 puntos)**
+
+- 10+ IAM Roles/Policies
+
+aws configure
+
+## Tecnologías
+
+```│   └── requirements.txt- ✅ **Arquitectura MVVM** - Separación View/ViewModel/Repository (2 pts)
+
+**Backend:**
+
+- FastAPI (desarrollo)
+
+- Python 3.11
+
+- SQLAlchemy### Desplegar Infraestructura│- ✅ **Concurrencia medible** - Demo con tiempos visibles (2 pts)
+
+- PostgreSQL (Supabase)
+
+- JWT Authentication```powershell
+
+
+
+**Frontend:**cd terraform├── frontend/lib/              # Flutter App- ✅ **Login con Backend** - JWT + persistencia (2 pts)
+
+- Flutter
+
+- Provider (state management)terraform init
+
+- HTTP client
+
+terraform apply│   ├── models/                # Data models- ✅ **CRUD funcional** - CREATE, READ, UPDATE, DELETE (2 pts)
+
+**Infrastructure:**
+
+- Terraform```
+
+- AWS Lambda
+
+- Application Load Balancer│   ├── repositories/          # Data access layer- ✅ **Documentación completa** - Evidencias y guías (2 pts)
+
+- API Gateway
+
+- SNS/SQS/SES## Endpoints
+
+- CloudWatch
 
 │   ├── viewmodels/            # Business logic
 
-│   └── screens/               # UI (Views)## 🏗️ Arquitectura MVVM
+## Referencias
+
+### Backend Local
+
+- ALB DNS: Obtener con `terraform output alb_dns_name`
+
+- Region: us-east-1- API: http://localhost:8000│   └── screens/               # UI (Views)## 🏗️ Arquitectura MVVM
+
+- Repositorio: GitHub/alex008c/CrudEmpleados
+
+- Documentación: http://localhost:8000/docs
+
+## Autor
 
 │
 
-├── bff/                       # Backend For Frontend```
+Proyecto universitario - Sistema de gestión de empleados con arquitectura serverless AWS
+
+### BFF Local
+
+---
+
+- API: http://localhost:8001├── bff/                       # Backend For Frontend```
+
+**Última actualización:** 4 de Noviembre de 2025  
+
+**Estado:** Producción - 51 recursos AWS activos- Documentación: http://localhost:8001/docs
+
 
 │   ├── main.py               # FastAPI middlewareCrudEmpleados/
 
-│   └── requirements.txt├── backend/                    # API FastAPI (Python)
+### AWS
 
-││   ├── main.py                # Endpoints REST
+- API Gateway Email: https://bnxlpofo59.execute-api.us-east-1.amazonaws.com/dev/publish│   └── requirements.txt├── backend/                    # API FastAPI (Python)
 
-├── terraform/                 # Infrastructure as Code│   ├── models.py              # Modelos SQLAlchemy + Pydantic
+- API Gateway CRUD: https://sv2ern4elf.execute-api.us-east-1.amazonaws.com/
 
-│   ├── main.tf│   ├── auth.py                # JWT generation/validation
+- CloudWatch Logs: `/aws/lambda/crud-app-email-lambda`││   ├── main.py                # Endpoints REST
 
-│   ├── vpc.tf│   ├── database.py            # DB config (SQLite/PostgreSQL)
 
-│   ├── crud_backend.tf│   └── requirements.txt       # Dependencias Python
 
-│   ├── messaging.tf│
+## Estructura del Proyecto├── terraform/                 # Infrastructure as Code│   ├── models.py              # Modelos SQLAlchemy + Pydantic
 
-│   └── api_gateway_email.tf├── frontend/                  # Aplicación Flutter (Dart)
 
-││   ├── lib/
 
-└── infra/lambdas/            # AWS Lambda Functions│   │   ├── main.dart         # MultiProvider setup
+```│   ├── main.tf│   ├── auth.py                # JWT generation/validation
 
-    ├── publisher_lambda/│   │   ├── models/
+CrudEmpleados/
 
-    └── email_lambda/│   │   │   └── empleado.dart # Data model
+├── backend/              # API FastAPI con CRUD│   ├── vpc.tf│   ├── database.py            # DB config (SQLite/PostgreSQL)
 
-```│   │   ├── repositories/     # 📁 DATA LAYER
+│   ├── main.py
 
-│   │   │   ├── auth_repository.dart      # Login, tokens
+│   ├── auth.py│   ├── crud_backend.tf│   └── requirements.txt       # Dependencias Python
 
----│   │   │   └── empleado_repository.dart  # CRUD + concurrencia
+│   ├── models.py
 
-│   │   ├── viewmodels/       # 📁 BUSINESS LOGIC
+│   ├── database.py│   ├── messaging.tf│
 
-## Arquitectura MVVM│   │   │   ├── auth_viewmodel.dart       # Auth state
+│   └── requirements.txt
 
-│   │   │   └── empleado_viewmodel.dart   # CRUD coordination
+├── bff/                  # Backend For Frontend│   └── api_gateway_email.tf├── frontend/                  # Aplicación Flutter (Dart)
+
+│   ├── main.py
+
+│   └── requirements.txt││   ├── lib/
+
+├── frontend/             # Aplicación Flutter
+
+│   ├── lib/└── infra/lambdas/            # AWS Lambda Functions│   │   ├── main.dart         # MultiProvider setup
+
+│   │   ├── models/
+
+│   │   ├── repositories/    ├── publisher_lambda/│   │   ├── models/
+
+│   │   ├── viewmodels/
+
+│   │   └── screens/    └── email_lambda/│   │   │   └── empleado.dart # Data model
+
+│   └── pubspec.yaml
+
+├── terraform/            # Infraestructura AWS```│   │   ├── repositories/     # 📁 DATA LAYER
+
+│   ├── main.tf
+
+│   ├── api_gateway_email.tf│   │   │   ├── auth_repository.dart      # Login, tokens
+
+│   ├── messaging.tf
+
+│   └── crud_backend_simple.tf---│   │   │   └── empleado_repository.dart  # CRUD + concurrencia
+
+├── infra/
+
+│   └── lambdas/         # Funciones Lambda│   │   ├── viewmodels/       # 📁 BUSINESS LOGIC
+
+│       ├── publisher_lambda/
+
+│       ├── email_lambda/## Arquitectura MVVM│   │   │   ├── auth_viewmodel.dart       # Auth state
+
+│       └── crud_backend/
+
+└── EJECUTAR_TODO.ps1    # Script de ejecución│   │   │   └── empleado_viewmodel.dart   # CRUD coordination
+
+```
 
 **View (Screens):**│   │   └── screens/          # 📁 UI LAYER (VIEWS)
 
+## Funcionalidades
+
 - Renderiza UI│   │       ├── login_screen.dart         # Consumer<AuthViewModel>
 
-- Captura eventos del usuario│   │       ├── home_screen.dart          # Consumer<EmpleadoViewModel>
+### Backend CRUD
 
-- No contiene lógica de negocio│   │       └── empleado_form_screen.dart # Create/Edit form
+- Registro de usuarios- Captura eventos del usuario│   │       ├── home_screen.dart          # Consumer<EmpleadoViewModel>
+
+- Login con JWT
+
+- CRUD completo de empleados- No contiene lógica de negocio│   │       └── empleado_form_screen.dart # Create/Edit form
+
+- Passwords hasheados con bcrypt
 
 │   └── pubspec.yaml          # Dependencias
 
-**ViewModel:**│
+### Servicio de Correo
 
-- Gestiona estado de la UI├── docs/                      # 📚 Documentación
+- Envío asíncrono mediante SNS/SQS**ViewModel:**│
 
-- Coordina operaciones│   ├── INDICE.md             # Índice completo
+- Procesamiento con Lambda
 
-- Notifica cambios a las Views│   ├── EVIDENCIAS.md         # ⭐ EVIDENCIAS DE EVALUACIÓN
+- Envío real con Amazon SES- Gestiona estado de la UI├── docs/                      # 📚 Documentación
 
-│   ├── GUIA_DESARROLLADORES.md  # Guía técnica
+- Dead Letter Queue para errores
 
-**Repository:**│   ├── DOCUMENTACION.md      # Arquitectura detallada
-
-- Maneja peticiones HTTP│   └── ...más docs
-
-- Persistencia local│
-
-- Abstrae la fuente de datos└── Scripts de inicio          # 🚀 Automatización
-
-    ├── start_all.ps1         # Inicia todo automáticamente
-
-**Model:**    ├── start_backend.ps1     # Solo backend
-
-- Estructuras de datos    └── start_frontend.ps1    # Solo frontend
-
-- Serialización JSON```
+- Logs en CloudWatch- Coordina operaciones│   ├── INDICE.md             # Índice completo
 
 
+
+### Frontend- Notifica cambios a las Views│   ├── EVIDENCIAS.md         # ⭐ EVIDENCIAS DE EVALUACIÓN
+
+- Autenticación de usuarios
+
+- Gestión de empleados (crear, listar, editar, eliminar)│   ├── GUIA_DESARROLLADORES.md  # Guía técnica
+
+- Envío de correos electrónicos
+
+- Interfaz responsive**Repository:**│   ├── DOCUMENTACION.md      # Arquitectura detallada
+
+
+
+## Seguridad- Maneja peticiones HTTP│   └── ...más docs
+
+
+
+- Autenticación JWT con expiración- Persistencia local│
+
+- Passwords hasheados con bcrypt
+
+- API Key para API Gateway- Abstrae la fuente de datos└── Scripts de inicio          # 🚀 Automatización
+
+- Tokens almacenados de forma segura
+
+- Variables de entorno para credenciales    ├── start_all.ps1         # Inicia todo automáticamente
+
+
+
+## Monitoreo**Model:**    ├── start_backend.ps1     # Solo backend
+
+
+
+Los logs de las funciones Lambda están disponibles en CloudWatch:- Estructuras de datos    └── start_frontend.ps1    # Solo frontend
+
+- `/aws/lambda/crud-app-publisher-lambda`
+
+- `/aws/lambda/crud-app-email-lambda`- Serialización JSON```
+
+- `/aws/lambda/crud-app-backend-lambda`
+
+
+
+## Recursos AWS Desplegados
 
 ------
 
-
-
-## Flujo de Arquitectura Cloud## 🔧 Instalación (Solo primera vez)
+Total: 35 recursos
 
 
 
-```### **Requisitos:**
+**Lambda Functions:**
 
-Frontend- Python 3.11+
+- publisher-lambda## Flujo de Arquitectura Cloud## 🔧 Instalación (Solo primera vez)
 
-    ↓- Flutter 3.0+
+- email-lambda
 
-BFF (Backend For Frontend)- VS Code (recomendado)
+- crud-backend-lambda
 
-    ↓
 
-API Gateway (x-api-key)### **Instalación automática:**
 
-    ↓Ejecuta cualquier script de inicio y las dependencias se instalarán automáticamente:
+**API Gateway:**```### **Requisitos:**
 
-Lambda Publisher```powershell
+- REST API (servicio email)
 
-    ↓.\start_all.ps1
+- HTTP API (backend CRUD)Frontend- Python 3.11+
 
-SNS Topic```
 
-    ↓DATABASE_URL = "postgresql://usuario:password@localhost:5432/empleados_db"
 
-SQS Queue → Dead Letter Queue```
+**Mensajería:**    ↓- Flutter 3.0+
 
-    ↓
+- SNS Topic (email-topic)
 
-Lambda Email**Opción B: SQLite (Rápido para desarrollo)**
+- SQS Queue (email-queue)BFF (Backend For Frontend)- VS Code (recomendado)
+
+- SQS DLQ (email-dlq)
 
     ↓
 
-CloudWatch LogsEdita `database.py` línea 6:
+**Monitoreo:**
 
-```
+- 3 CloudWatch Log GroupsAPI Gateway (x-api-key)### **Instalación automática:**
+
+
+
+**IAM:**    ↓Ejecuta cualquier script de inicio y las dependencias se instalarán automáticamente:
+
+- Roles y políticas para Lambda
+
+- Permisos para SNS, SQS y SESLambda Publisher```powershell
+
+
+
+## Costos    ↓.\start_all.ps1
+
+
+
+El proyecto utiliza la capa gratuita de AWS:SNS Topic```
+
+- Lambda: 1M invocaciones/mes gratis
+
+- SNS: 1M publicaciones/mes gratis    ↓DATABASE_URL = "postgresql://usuario:password@localhost:5432/empleados_db"
+
+- SQS: 1M requests/mes gratis
+
+- API Gateway: 1M llamadas/mes gratisSQS Queue → Dead Letter Queue```
+
+- SES: 62,000 emails/mes gratis
+
+- CloudWatch: 5GB logs/mes gratis    ↓
+
+
+
+Para uso universitario: Costo $0Lambda Email**Opción B: SQLite (Rápido para desarrollo)**
+
+
+
+## Guía de Presentación    ↓
+
+
+
+### Preparación (1 minuto antes)CloudWatch LogsEdita `database.py` línea 6:
+
+1. Ejecutar `.\EJECUTAR_TODO.ps1`
+
+2. Esperar a que Flutter inicie```
+
+3. Abrir AWS Console en CloudWatch
 
 ```python
 
----DATABASE_URL = "sqlite:///./empleados.db"
+### Demostración (3 minutos)
 
-```
+1. **Minuto 1:** Login y CRUD de empleados---DATABASE_URL = "sqlite:///./empleados.db"
 
-## Despliegue en AWS
+2. **Minuto 2:** Enviar correo mediante modal
 
-#### 3. Ejecutar el servidor
+3. **Minuto 3:** Mostrar logs en CloudWatch```
 
-### Requisitos
+
+
+### Puntos Clave a Mencionar## Despliegue en AWS
+
+- Arquitectura desacoplada y asíncrona
+
+- 35 recursos AWS con Terraform#### 3. Ejecutar el servidor
+
+- Dead Letter Queue para confiabilidad
+
+- Infrastructure as Code### Requisitos
+
+- Serverless y auto-escalable
 
 - AWS CLI configurado```powershell
 
+## Troubleshooting
+
 - Terraform instaladouvicorn main:app --reload --host 0.0.0.0 --port 8000
 
-- Python 3.11+```
+**Error de conexión en puerto 8001:**
+
+- Verificar que el BFF esté ejecutándose- Python 3.11+```
+
+- Revisar que no haya otro proceso en el puerto
 
 - Flutter SDK
 
-El backend estará en: `http://localhost:8000`
+**Backend no responde:**
+
+- Verificar DATABASE_URLEl backend estará en: `http://localhost:8000`
+
+- Confirmar que PostgreSQL está accesible
 
 ### Pasos
 
-Documentación interactiva: `http://localhost:8000/docs`
+**Flutter no compila:**
 
-1. **Desplegar infraestructura:**
+- Ejecutar `flutter clean`Documentación interactiva: `http://localhost:8000/docs`
 
-```powershell### **Frontend (Flutter)**
+- Ejecutar `flutter pub get`
 
-cd terraform
+- Verificar `flutter doctor`1. **Desplegar infraestructura:**
+
+
+
+**AWS no muestra logs:**```powershell### **Frontend (Flutter)**
+
+- Esperar 10-15 segundos
+
+- Refrescar CloudWatchcd terraform
+
+- Verificar región us-east-1
 
 terraform init#### 1. Instalar Flutter
 
+## Licencia
+
 terraform apply
+
+Este es un proyecto académico desarrollado para fines educativos.
 
 ```Descarga desde: https://flutter.dev/docs/get-started/install
 
+## Autor
 
+
+
+Proyecto desarrollado para la asignatura de Cloud Computing.
 
 2. **Configurar BFF:**#### 2. Verificar instalación
 
+---
+
 ```powershell
 
-# Copiar outputs de Terraform```powershell
+**Última actualización:** Noviembre 2025
+
+**Estado:** Producción# Copiar outputs de Terraform```powershell
+
+**Versión:** 1.0.0
 
 terraform output email_api_urlflutter doctor
 

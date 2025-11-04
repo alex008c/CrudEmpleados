@@ -1,6 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, EmailStr
+from mangum import Mangum
 import requests
 import os
 
@@ -22,6 +23,11 @@ class EmailRequest(BaseModel):
 @app.get("/")
 def read_root():
     return {"service": "BFF Email Service", "status": "running"}
+
+@app.get("/health")
+def health_check():
+    """Endpoint de health check para el ALB"""
+    return {"status": "healthy", "service": "BFF Email Service"}
 
 @app.post("/notify/email")
 def notify_email(email_request: EmailRequest):
@@ -65,3 +71,6 @@ def notify_email(email_request: EmailRequest):
             status_code=502,
             detail=f"Error al conectar con el servicio de mensajería: {str(e)}"
         )
+
+# Handler para AWS Lambda
+handler = Mangum(app)
