@@ -1,0 +1,7 @@
+[
+  {
+    "Id": "1",
+    "Arn": "arn:aws:lambda:us-east-1:717119779211:function:crud-app-email-lambda",
+    "Input": "{\"Records\":[{\"body\":\"{\\\"to\\\":\\\"alexfrank.af04@gmail.com\\\",\\\"subject\\\":\\\"Correo Automatizado - EventBridge\\\",\\\"body\\\":\\\"Este correo fue enviado automaticamente cada 5 minutos por EventBridge.\\\"}\"}]}"
+  }
+]

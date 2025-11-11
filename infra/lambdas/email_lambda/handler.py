@@ -13,12 +13,20 @@ ses_client = boto3.client('ses', region_name='us-east-1')
 SENDER_EMAIL = "alexfrank.af04@gmail.com"
 
 def lambda_handler(event, context):
-    logger.info(f"Procesando {len(event['Records'])} mensajes de SQS")
+    logger.info(f"Procesando {len(event['Records'])} mensajes de EventBridge/SQS")
     
     for record in event['Records']:
         try:
-            sns_message = json.loads(record['body'])
-            email_data = json.loads(sns_message['Message'])
+            # Parsear el body (puede venir directo de EventBridge o de SNS)
+            body_content = json.loads(record['body'])
+            
+            # Si tiene 'Message' es de SNS, si no, es directo de EventBridge
+            if 'Message' in body_content:
+                # Formato SNS: body -> Message -> datos
+                email_data = json.loads(body_content['Message'])
+            else:
+                # Formato EventBridge: body -> datos directos
+                email_data = body_content
             
             to = email_data.get('to')
             subject = email_data.get('subject')
